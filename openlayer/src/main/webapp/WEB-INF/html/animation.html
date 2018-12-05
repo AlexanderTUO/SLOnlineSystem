@@ -1,0 +1,243 @@
+<!doctype html>
+<html>
+<meta charset="utf-8">
+<head>
+    <title>地图demo</title>
+    <script language="javascript" src="Scripts/ol-debug.js"></script>
+    <script language="javascript" src="Scripts/arc.js"></script>
+	<script language="javascript" src="Scripts/jquery-1.4.4.js"></script>
+	<link type="text/css" src="Css/map.css"></link>
+    <style type="text/css">
+        .measuretip {
+            position: relative;
+            background-color: #0D9BF2;
+            opacity: 0.7;
+            border-radius: 3px;
+            padding: 10px;
+            font-size: 12px;
+            cursor: default;
+        }
+    </style>
+</head>
+<body style="margin:0;" scroll="no">
+<div id="map" style="height: 100%;width:100%;position: relative;">
+    <div style="width:190px;position: absolute;z-index: 11;right:10px;top:10px;background-color: #0D9BF2;opacity: 0.7;border-radius: 3px;padding: 10px;font-size: 12px">
+        <table>
+            <tr>
+                <td colspan="3">回放速度：<input type="range" id="speed" min="100" max="200" /></td>
+            </tr>
+            <tr>
+                <td><input type="button" value="开始回放" id="startButton" onclick="startAnimation();"style="cursor: pointer;"></td>
+                <td><input type="button" value="暂停" id="pauseButton" onclick="pauseAnimation();"style="cursor: pointer;"></td>
+            </tr>
+        </table>
+    </div>
+        </div>
+        <script type="text/javascript">
+            var projection = new ol.proj.Projection({ code: 'EPSG:4326', units: 'degrees' });
+
+
+
+            var routeCoords =
+                    [[120.97202539443971,29.149083495140076],[120.97365617752077,29.147656559944153],[120.97478270530702,29.146594405174255],
+                        [120.97543716430665,29.14593994617462],[120.97596287727357,29.145285487174988],[120.9764349460602,29.144577383995056],
+                        [120.97669243812561,29.14408653974533],[120.97699284553528,29.143426716327667],[120.97723960876465,29.142654240131378],
+                        [120.97735226154329,29.142230451107025],[120.97756683826448,29.141243398189545],[120.97781896591188,29.140020310878754],
+                        [120.97790479660036,29.139483869075775],[120.97804427146912,29.138880372047424],[120.97839832305908,29.137893319129944],
+                        [120.97876310348511,29.137163758277893],[120.97941756248474,29.13626253604889],[120.9810483455658,29.134342074394226],
+                        [120.9818959236145,29.133376479148865],[120.98270595073701,29.132418930530548],[120.98334968090059,29.131678640842438],
+                        [120.98402559757234,29.130959808826447],[120.98470687866212,29.13033217191696],[120.985227227211,29.12989765405655],
+                        [120.9860908985138,29.129264652729034],[120.98707258701324,29.12864774465561],[120.9880542755127,29.12812203168869],
+                        [120.98936319351196,29.127537310123444],[120.99144458770752,29.126807749271393],[120.99297881126404,29.126287400722504],
+                        [120.99447548389435,29.125772416591644],[120.99569857120514,29.125321805477142],[120.99704504013062,29.124737083911896],
+                        [120.99830567836761,29.12410408258438],[120.99883675575256,29.123830497264862],[120.99963068962097,29.1233691573143],
+                        [121.00059628486633,29.122741520404816],[121.00166380405426,29.122038781642914],[121.00329995155334,29.120981991291046],
+                        [121.00475907325745,29.120016396045685],[121.00560128688812,29.119447767734528],[121.00612163543701,29.11910980939865],
+                        [121.0070389509201,29.11860018968582],[121.00769877433777,29.118267595767975],[121.00861608982086,29.1178759932518],
+                        [121.00979626178741,29.117489755153656],[121.01091742515564,29.117216169834137],[121.01166307926178,29.117071330547336],
+                        [121.01268768310547,29.116931855678562],[121.0139536857605,29.116878211498264],[121.01507484912872,29.116931855678562],
+                        [121.01689338684082,29.117071330547336],[121.01934492588043,29.117291271686558],[121.02029979228975,29.117350280284885],
+                        [121.02101325988771,29.117339551448826],[121.02191984653474,29.117242991924286],[121.02294981479646,29.117001593112946],
+                        [121.02402269840242,29.116583168506622],[121.02478981018068,29.1161647439003],[121.0260719060898,29.115327894687653]]
+
+            var routeLength = routeCoords.length;
+
+            var routeFeature = new ol.Feature({
+                type: 'route',
+                geometry: new ol.geom.LineString(routeCoords)
+            });
+            var geoMarker = new ol.Feature({
+                type: 'geoMarker',
+                geometry: new ol.geom.Point(routeCoords[0])
+            });
+
+            var styles = {
+                'route': new ol.style.Style({
+                    stroke: new ol.style.Stroke({
+                        width: 2, color: [237, 212, 0, 0.8]
+                    })
+                }),
+                'geoMarker': new ol.style.Style({
+                    image: new ol.style.Icon({
+                        src: 'Images/taxi.png',
+                        rotateWithView: false,
+                        rotation: -Math.atan2(routeCoords[1][1] - routeCoords[0][1], routeCoords[1][0] - routeCoords[0][0])
+                    })})
+            };
+
+            var animating = false;
+            var now;
+            var progress = 0;
+
+            var vectorLayer = new ol.layer.Vector({
+                source: new ol.source.Vector({
+                    features: [routeFeature, geoMarker]
+                }),
+                style: function(feature) {
+                    if (animating && feature.get('type') === 'geoMarker') {
+                        return null;
+                    }
+                    return styles[feature.get('type')];
+                }
+            });
+            var vectorLayer2 = new ol.layer.Vector({
+                source: new ol.source.Vector({
+                })
+            });
+
+            var map = new ol.Map({
+                target: 'map',
+                layers: [
+                    new ol.layer.Tile({
+                        source: new ol.source.XYZ({
+                            url:'http://www.google.cn/maps/vt/pb=!1m4!1m3!1i{z}!2i{x}!3i{y}!2m3!1e0!2sm!3i345013117!3m8!2szh-CN!3scn!5e1105!12m4!1e68!2m2!1sset!2sRoadmap!4e0'//Roadmap  SATELLITE satellite
+                            //url:'http://www.google.cn/maps/vt?pb=!1m5!1m4!1i{z}!2i{x}!3i{y}!4i256!2m3!1e0!2sm!3i342009817!3m9!2szh-CN!3sCN!5e18!12m1!1e47!12m3!1e37!2m1!1ssmartmaps!4e0&token=32965'
+                        }),
+                        projection: 'EPSG:3857'
+                    }),vectorLayer,vectorLayer2],
+                view: new ol.View({
+                    projection: projection,
+                    center:[120.9800615193, 29.1326618704],
+                    zoom:14})
+            });
+
+            var helpTooltipElement = document.createElement('div');
+            helpTooltipElement.className = 'measuretip';
+            var helpTooltip = new ol.Overlay({
+                element: helpTooltipElement,
+                offset: [15, 0],
+                positioning: 'center-left'
+            });
+            map.addOverlay(helpTooltip);
+
+            window.requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame || window.webkitRequestAnimationFrame || window.msRequestAnimationFrame;
+            var cancelAnimationFrame = window.cancelAnimationFrame || window.mozCancelAnimationFrame;
+
+            var progress = 0;
+            var animation;
+            var moveFeature = function(timestamp){
+                var speed = 100;
+                //var speed = document.getElementById("speed").value;
+                progress += 1;
+                if(progress%speed==0){
+                    var currentPoint = new ol.geom.Point(routeCoords[progress/speed]);
+                    var dx = routeCoords[progress/speed][0] - routeCoords[progress/speed-1][0];
+                    var dy = routeCoords[progress/speed][1] - routeCoords[progress/speed-1][1];
+                    var rotation = Math.atan2(dy, dx);
+                    var styleGeomarker = new ol.style.Style({
+                        image: new ol.style.Icon({
+                            src: 'Images/taxi.png',
+                            rotateWithView: false,
+                            rotation: -rotation
+                        })})
+                    var feature = new ol.Feature(currentPoint);
+                    vectorLayer2.getSource().clear();
+                    vectorLayer2.getSource().addFeature(feature);
+                    vectorLayer2.setStyle(styleGeomarker);
+                }
+                if(progress%speed!=0){
+                    var arcGenerator = new arc.GreatCircle(
+                            {x: routeCoords[Math.floor(progress/speed)][0], y: routeCoords[Math.floor(progress/speed)][1]},
+                            {x: routeCoords[Math.floor(progress/speed+1)][0], y: routeCoords[Math.floor(progress/speed+1)][1]});
+
+                    var arcLine = arcGenerator.Arc(speed, {offset: 0});//在两个点之间生成100个点
+                    var line = new ol.geom.LineString(arcLine.geometries[0].coords);
+                    var lineFeature = new ol.Feature({
+                        type: 'route',
+                        geometry: line
+                    });
+
+
+                    var currentPoint = new ol.geom.Point(arcLine.geometries[0].coords[progress%speed]);
+                    var dx = arcLine.geometries[0].coords[progress%speed][0] - arcLine.geometries[0].coords[progress%speed-1][0];
+                    var dy = arcLine.geometries[0].coords[progress%speed][1] - arcLine.geometries[0].coords[progress%speed-1][1];
+                    var rotation = Math.atan2(dy, dx);
+                    var styleGeomarker = new ol.style.Style({
+                        image: new ol.style.Icon({
+                            src: 'Images/taxi.png',
+                            rotateWithView: false,
+                            rotation: -rotation
+                        })})
+                    var feature = new ol.Feature(currentPoint);
+                    vectorLayer2.getSource().clear();
+                    vectorLayer2.getSource().addFeature(feature);
+                    vectorLayer2.setStyle(styleGeomarker);
+                    helpTooltipElement.innerHTML="<B>名称：</B>出租车"+"\<br\>"
+                            +"<B>当前速度：</B>75km/h"+"\<br\>"
+                            +"<B>号牌：</B>浙A0001"+"\<br\>"
+                            +"<B>经纬度：</B>"+(arcLine.geometries[0].coords[progress%100][0]+"").substring(0,8)+","+(arcLine.geometries[0].coords[progress%100][1]+"").substring(0,7);
+                    helpTooltip.setPosition(arcLine.geometries[0].coords[progress%100]);
+                }
+                if (progress/speed < routeLength-1) {
+                    animation = requestAnimationFrame(moveFeature);
+                }
+
+            }
+
+            document.getElementById("pauseButton").disabled=true;
+
+            function startAnimation() {
+                if (animating) {
+                    //stopAnimation(false);
+                    //stopAnimation2();
+                } else {
+                    animating = true;
+                    geoMarker.setStyle(null);
+                    animation = requestAnimationFrame(moveFeature);
+                    map.render();
+                    document.getElementById("startButton").value="停止回放";
+                    document.getElementById("startButton").onclick=stopAnimation
+                    document.getElementById("pauseButton").disabled=false;
+                }
+            }
+
+
+            function stopAnimation(){
+                window.cancelAnimationFrame(animation);
+                vectorLayer2.getSource().clear();
+                helpTooltip.setPosition(undefined);
+                geoMarker.setStyle(styles.geoMarker);
+                progress = 0;
+                animating = false;
+                document.getElementById("startButton").value="开始回放";
+                document.getElementById("startButton").onclick=startAnimation
+                document.getElementById("pauseButton").value="暂停";
+                document.getElementById("pauseButton").onclick=pauseAnimation
+                document.getElementById("pauseButton").disabled=true;
+            }
+
+            function pauseAnimation(){
+                window.cancelAnimationFrame(animation);
+                document.getElementById("pauseButton").value="继续";
+                document.getElementById("pauseButton").onclick=continueAnimation
+            }
+
+            function continueAnimation(){
+                animation = requestAnimationFrame(moveFeature);
+                document.getElementById("pauseButton").value="暂停";
+                document.getElementById("pauseButton").onclick=pauseAnimation
+            }
+
+        </script>
+</body>
+</html>
