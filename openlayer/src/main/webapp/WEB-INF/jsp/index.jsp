@@ -7,927 +7,261 @@
 --%>
 <%@ page contentType="text/html;charset=utf-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
-<html>
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-    <meta charset="utf-8">
-    <title>Apricot 1.3</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="">
-    <meta name="author" content="">
-    <!-- Le styles -->
-
-
-
-    <link rel="stylesheet" href="assets/css/style.css">
-    <link rel="stylesheet" href="assets/css/loader-style.css">
-    <link rel="stylesheet" href="assets/css/bootstrap.css">
-
-    <link rel="stylesheet" type="text/css" href="assets/js/progress-bar/number-pb.css">
-
-
-    <style type="text/css">
-        canvas#canvas4 {
-            position: relative;
-            top: 20px;
-        }
-    </style>
-
-
-
-
-    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
-    <!--[if lt IE 9]>
-    <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
-    <![endif]-->
-    <!-- Fav and touch icons -->
-    <link rel="shortcut icon" href="assets/ico/minus.png">
+    <title>水利信息在线分析服务系统</title>
+    <link href="lib/jquery-ui-1.12.1/jquery-ui.css" rel="stylesheet" type="text/css" />
+    <link href="css/style.css" rel="stylesheet" type="text/css" />
+    <!-- jQuery库 -->
+    <script src="lib/jquery-3.3.1.min.js" type="text/javascript"></script>
+    <!--OL3库-->
+    <!--    <script src="Libs/ol/ol.js" type="text/javascript"></script>-->
+    <script src="lib/ol-5.3.0/ol.js" type="text/javascript"></script>
+    <link href="lib/ol-5.3.0/ol.css" rel="stylesheet" type="text/css" />
+    <!--OL3扩展库-->
+    <%--<script src="Libs/ol/source/GoogleMapSource.js" type="text/javascript"></script>--%>
+    <%--<script src="Libs/ol/layer/GoogleMapLayer.js" type="text/javascript"></script>--%>
+    <!-- 第三方插件库 统计图插件 -->
+    <script src="lib/fusioncharts.js" type="text/javascript"></script>
+    <!-- 第三方插件库 -->
+    <script src="lib/jquery-ui-1.12.1/jquery-ui.js" type="text/javascript"></script>
+    <%--<script src="Libs/jquery.ui.datepicker-zh-CN.js" type="text/javascript"></script>--%>
 </head>
-
 <body>
-<!-- Preloader -->
-<div id="preloader">
-    <div id="status">&nbsp;</div>
+<div class="backgroundDiv">
 </div>
-<jsp:include page="included.jsp" flush="true"></jsp:include>
-
-
-
-<!--  PAPER WRAP -->
-<div class="wrap-fluid">
-    <div class="container-fluid paper-wrap bevel tlbr">
-        <!-- CONTENT -->
-        <!--TITLE -->
-        <div class="row">
-            <div id="paper-top">
-                <div class="col-lg-3">
-                    <h2 class="tittle-content-header">
-                        <i class="icon-window"></i>
-                        <span>Dashboard
-                            </span>
-                    </h2>
-
-                </div>
-
-                <div class="col-lg-7">
-                    <div class="devider-vertical visible-lg"></div>
-                    <div class="tittle-middle-header">
-
-                        <div class="alert">
-                            <button type="button" class="close" data-dismiss="alert">×</button>
-                            <span class="tittle-alert entypo-info-circled"></span>
-                            Welcome back,&nbsp;
-                            <strong>Dave mattew!</strong>&nbsp;&nbsp;Your last sig in at Yesterday, 16:54 PM
-                        </div>
-
-
-                    </div>
-
-                </div>
-                <div class="col-lg-2">
-                    <div class="devider-vertical visible-lg"></div>
-                    <div class="btn-group btn-wigdet pull-right visible-lg">
-                        <div class="btn">
-                            Widget</div>
-                        <button data-toggle="dropdown" class="btn dropdown-toggle" type="button">
-                            <span class="caret"></span>
-                            <span class="sr-only">Toggle Dropdown</span>
-                        </button>
-                        <ul role="menu" class="dropdown-menu">
-                            <li>
-                                <a href="#">
-                                    <span class="entypo-plus-circled margin-iconic"></span>Add New</a>
-                            </li>
-                            <li>
-                                <a href="#">
-                                    <span class="entypo-heart margin-iconic"></span>Favorite</a>
-                            </li>
-                            <li>
-                                <a href="#">
-                                    <span class="entypo-cog margin-iconic"></span>Setting</a>
-                            </li>
-                        </ul>
-                    </div>
-
-
-                </div>
-            </div>
-        </div>
-        <!--/ TITLE -->
-
-        <!-- BREADCRUMB -->
-        <ul id="breadcrumb">
-            <li>
-                <span class="entypo-home"></span>
-            </li>
-            <li><i class="fa fa-lg fa-angle-right"></i>
-            </li>
-            <li><a href="#" title="Sample page 1">Home</a>
-            </li>
-            <li><i class="fa fa-lg fa-angle-right"></i>
-            </li>
-            <li><a href="#" title="Sample page 1">Dashboard</a>
-            </li>
-            <li class="pull-right">
-                <div class="input-group input-widget">
-
-                    <input style="border-radius:15px" type="text" placeholder="Search..." class="form-control">
-                </div>
-            </li>
-        </ul>
-
-        <!-- END OF BREADCRUMB -->
-
-
-
-
-
-
-        <div id="paper-middle">
-            <div id="mapContainer"></div>
-        </div>
-
-        <!--  DEVICE MANAGER -->
-        <div class="content-wrap">
-            <div class="row">
-                <div class="col-lg-3">
-                    <div class="profit" id="profitClose">
-                        <div class="headline ">
-                            <h3>
-                                    <span>
-                                        <i class="maki-ferry"></i>&#160;&#160;Ferry Arrival</span>
-                            </h3>
-                            <div class="titleClose">
-                                <a href="#profitClose" class="gone">
-                                    <span class="entypo-cancel"></span>
-                                </a>
-                            </div>
-                        </div>
-
-                        <div class="value">
-                                <span class="pull-left"><i class="entypo-clock clock-position"></i>
-                                </span>
-                            <div id="getting-started">
-                                <span>%M</span>
-
-                                <span>%S</span>
-                            </div>
-
-
-                        </div>
-
-                        <div class="progress-tinny">
-                            <div style="width: 50%" class="bar"></div>
-                        </div>
-                        <div class="profit-line">
-                            <i class="fa fa-caret-up fa-lg"></i>&#160;&#160; 50% &#160;From Last Hour</div>
-                    </div>
-                </div>
-                <div class="col-lg-3">
-                    <div class="revenue" id="revenueClose">
-                        <div class="headline ">
-
-                            <h3>
-                                    <span>
-                                        <i class="maki-aboveground-rail"></i>&#160;&#160;Train Speed</span>
-                            </h3>
-
-                            <div class="titleClose">
-                                <a href="#revenueClose" class="gone">
-                                    <span class="entypo-cancel"></span>
-                                </a>
-                            </div>
-                        </div>
-                        <div class="value">
-                                <span class="pull-left"><i class="entypo-gauge gauge-position"></i>
-                                </span>
-                            <canvas id="canvas4" width="70" height="70"></canvas>
-                            <i class="pull-right">/Km</i>
-
-                        </div>
-
-
-
-
-
-
-
-
-                        <div class="progress-tinny">
-                            <div style="width: 25%" class="bar"></div>
-                        </div>
-                        <div class="profit-line">
-                            <i class="fa fa-caret-down fa-lg"></i>&#160;&#160;Rate : 20 km/Hour</div>
-                    </div>
-                </div>
-                <div class="col-lg-3">
-                    <div class="order" id="orderClose">
-                        <div class="headline ">
-                            <h3>
-                                    <span>
-                                        <i class="maki-airport"></i>&#160;&#160;AIR PORT TRAFFIC</span>
-                            </h3>
-                            <div class="titleClose">
-                                <a href="#orderClose" class="gone">
-                                    <span class="entypo-cancel"></span>
-                                </a>
-                            </div>
-                        </div>
-                        <div class="value">
-                                <span><i class="fa fa-plane fa-2x"></i>
-                                </span><b id="speed"></b><b>Take Off</b>
-
-                        </div>
-
-                        <div class="progress-tinny">
-                            <div style="width: 10%" class="bar"></div>
-                        </div>
-                        <div class="profit-line">
-                            <i class="fa fa-caret-down fa-lg"></i>&#160;&#160;Rate : 20 Plane/Hour</div>
-                    </div>
-                </div>
-                <div class="col-lg-3">
-                    <div class=" member" id="memberClose">
-                        <div class="headline ">
-                            <h3>
-                                    <span>
-                                        <i class="fa fa-truck"></i>
-                                        &#160;&#160;CARGO
-                                    </span>
-                            </h3>
-                            <div class="titleClose">
-                                <a href="#memberClose" class="gone">
-                                    <span class="entypo-cancel"></span>
-                                </a>
-                            </div>
-                        </div>
-                        <div class="value">
-                                <span><i class="maki-warehouse"></i>
-                                </span>45<b>Sent</b>
-
-                        </div>
-                        <div class="progress-tinny">
-                            <div style="width: 50%" class="bar"></div>
-                        </div>
-                        <div class="profit-line">
-                            <span class="entypo-down-circled"></span>&#160;50% From Last Month</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <!--  / DEVICE MANAGER -->
-
-
-
-
-
-
-
-
-
-
-        <div class="content-wrap">
-            <div class="row">
-                <div class="col-lg-8">
-                    <div id="siteClose" class="nest">
-                        <div class="title-alt">
-                            <h6>
-                                <span class="fontawesome-truck"></span>&nbsp;Destination</h6>
-                            <div class="titleClose">
-                                <a class="gone" href="#siteClose">
-                                    <span class="entypo-cancel"></span>
-                                </a>
-                            </div>
-                            <div class="titleToggle">
-                                <a class="nav-toggle-alt" href="#site">
-                                    <span class="entypo-up-open"></span>
-                                </a>
-                            </div>
-                        </div>
-                        <div id="site" class="body-nest" style="min-height:296px;">
-                            <div class="table-responsive">
-                                <table class="table">
-                                    <thead>
-                                    <tr>
-                                        <th></th>
-                                        <th></th>
-                                        <th></th>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-                                    <tr>
-                                        <td class="armada-devider">
-                                            <div class="armada">
-                                                        <span style="background:#65C3DF">
-                                                            <span class="maki-bus"></span>&nbsp;&nbsp;Trans Berlin</span>
-                                                <p>
-                                                    <span class="entypo-gauge"></span>&nbsp;12 Km/<i>Hours</i>
-                                                </p>
-                                            </div>
-                                        </td>
-                                        <td class="driver-devider">
-                                            <img class="armada-pic img-circle" alt="" src="http://api.randomuser.me/portraits/thumb/men/14.jpg">
-                                            <h3>Mark Zukenbeirg</h3>
-                                            <br>
-                                            <p>Driver</p>
-                                        </td>
-                                        <td class="progress-devider">
-
-
-                                            <section id="basic">
-                                                <article>
-
-                                                    <div class="number-pb">
-                                                        <div class="number-pb-shown"></div>
-                                                        <div class="number-pb-num">0</div>
-                                                    </div>
-                                                </article>
-                                            </section>
-                                            <span class="label pull-left">Berlin</span>
-                                            <span class="label pull-right">Muchen</span>
-
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td class="armada-devider">
-                                            <div class="armada">
-                                                        <span style="background:#45B6B0">
-                                                            <span class="fontawesome-plane"></span>&nbsp;&nbsp;Fly Airlines</span>
-                                                <p>
-                                                    <span class="entypo-gauge"></span>&nbsp;600 Km/<i>Hours</i>
-                                                </p>
-                                            </div>
-                                        </td>
-                                        <td class="driver-devider">
-                                            <img class="armada-pic img-circle" alt="" src="http://api.randomuser.me/portraits/thumb/men/38.jpg">
-                                            <h3>Marko Freytag</h3>
-                                            <br>
-                                            <p>Pilot</p>
-                                        </td>
-                                        <td class="progress-devider">
-
-
-                                            <section id="percentage">
-                                                <article>
-                                                    <div class="number-pb">
-                                                        <div class="number-pb-shown dream"></div>
-                                                        <div class="number-pb-num">0%</div>
-                                                    </div>
-                                                </article>
-                                            </section>
-
-
-                                            <span class="label pull-left">Berlin</span>
-                                            <span class="label pull-right">London</span>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td class="armada-devider">
-                                            <div class="armada">
-                                                        <span style="background:#FF6B6B">
-                                                            <span class="maki-aboveground-rail"></span>&nbsp;&nbsp;Fazttrain</span>
-                                                <p>
-                                                    <span class="entypo-gauge"></span>&nbsp;40 Km/<i>Hours</i>
-                                                </p>
-                                            </div>
-                                        </td>
-                                        <td class="driver-devider">
-                                            <img class="armada-pic img-circle" alt="" src="http://api.randomuser.me/portraits/thumb/men/39.jpg">
-                                            <h3>Dieter Gruenewald</h3>
-                                            <br>
-                                            <p>machinist</p>
-                                        </td>
-                                        <td class="progress-devider">
-
-                                            <section id="step">
-                                                <article>
-
-                                                    <div class="number-pb">
-                                                        <div class="number-pb-shown sun"></div>
-                                                        <div class="number-pb-num">0/0</div>
-                                                    </div>
-                                                </article>
-                                            </section>
-
-                                            <span class="label pull-left">Berlin</span>
-                                            <span class="label pull-right">Dortmund</span>
-                                        </td>
-                                    </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-4">
-                    <div id="RealTimeClose" class="nest">
-                        <div class="title-alt">
-                            <h6>
-                                <span class="fontawesome-resize-horizontal"></span>&nbsp;Direction</h6>
-                            <div class="titleClose">
-                                <a class="gone" href="#RealTimeClose">
-                                    <span class="entypo-cancel"></span>
-                                </a>
-                            </div>
-                            <div class="titleToggle">
-                                <a class="nav-toggle-alt" href="#RealTime">
-                                    <span class="entypo-up-open"></span>
-                                </a>
-                            </div>
-                        </div>
-                        <div id="RealTime" style="min-height:296px;padding-top:20px;" class="body-nest">
-                            <ul class="direction">
-                                <li>
-                                    <span class="direction-icon maki-fuel" style="background:#FF6B6B"></span>
-                                    <h3>
-                                        <span>Gas Station</span>
-                                    </h3>
-                                    <p>5 Km Foward&nbsp;&nbsp;<i class="fa fa-arrow-circle-up"></i>
-                                    </p>
-                                    <p><i>Estimated time </i>:&nbsp;<i class="fa fa-clock-o"></i>&nbsp;&nbsp;20 Min</p>
-                                </li>
-                                <li class="divider"></li>
-                                <li>
-                                    <span class="direction-icon maki-fast-food" style="background:#65C3DF"></span>
-                                    <h3>
-                                        <span>Restourant</span>
-                                    </h3>
-                                    <p>1 Km Turn Left&nbsp;&nbsp;<i class="fa fa-reply"></i>
-                                    </p>
-                                    <p><i>Estimated time </i>:&nbsp;<i class="fa fa-clock-o"></i>&nbsp;&nbsp;20 Min</p>
-                                </li>
-                                <li class="divider"></li>
-                                <li>
-                                    <span class="direction-icon maki-giraffe" style="background:#45B6B0"></span>
-                                    <h3>
-                                        <span>Zoo</span>
-                                    </h3>
-                                    <p>3 Km Turn Right &nbsp;&nbsp;<i class="fa fa-share"></i>
-                                    </p>
-                                    <p><i>Estimated time </i>:&nbsp;<i class="fa fa-clock-o"></i>&nbsp;&nbsp;20 Min</p>
-                                </li>
-                                <li class="divider"></li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-
-
-
-
-        <div class="content-wrap">
-            <div class="row">
-                <div class="col-lg-6">
-                    <div class="chart-wrap">
-                        <div class="chart-dash">
-                            <!-- <div id="sparkline"></div> -->
-                            <div id="placeholder" style="width:100%;height:200px;"></div>
-                        </div>
-                        <div class="row">
-                            <div class="col-lg-8">
-                                <div class="speed">
-                                    <h2>Speed Avarage</h2>
-                                    <h1>74
-                                        <span>Km / hours</span>
-                                    </h1>
-                                </div>
-                            </div>
-                            <div class="col-lg-4">
-                                <div class="traffic">
-                                    <h2>Traffic per day</h2>
-                                    <h1>2.5874</h1>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-lg-4">
-                                <div class="traffic-rates">
-                                    <h4>Traffic Rates</h4>
-                                    <h1>76 %
-                                        <span>-1,2 %</span>
-                                    </h1>
-                                </div>
-                            </div>
-                            <div class="col-lg-4">
-                                <div class="traffic-rates">
-                                    <h4>Traffic Rates</h4>
-                                    <h1>25 %
-                                        <span>-1,8 %</span>
-                                    </h1>
-                                </div>
-                            </div>
-                            <div class="col-lg-4">
-                                <div class="traffic-rates">
-                                    <h4>Traffic Rates</h4>
-                                    <h1>83 %
-                                        <span>-1,9 %</span>
-                                    </h1>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-6">
-                    <div class="weather-wrap">
-                        <div class="row">
-                            <div class="col-lg-12">
-                                <div class="temperature"><b>Monday</b>, 07:30 AM
-                                    <span>F</span>
-                                    <span><b>C</b>
-                                        </span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-lg-4">
-                                <div class="weather-icon">
-                                    <i class="wi-day-lightning"></i>
-                                </div>
-                            </div>
-                            <div class="col-lg-8">
-                                <div class="weather-text">
-                                    <h2>Berlin
-                                        <br><i>Day Lightning</i>
-                                    </h2>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-lg-12">
-                                <div class="weather-text">
-                                    <h3><i class="wi-thermometer"></i>18<i class="wi-celcius"></i>
-                                    </h3>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="weather-dash">
-                            <div class="row">
-                                <div class="col-lg-2">
-                                    <div class="daily-weather">
-                                        <h2>Mon</h2>
-                                        <h3>85
-                                            <span><i class="wi-fahrenheit"></i>
-                                                </span>
-                                        </h3>
-                                        <h4>
-                                                <span><i class="wi-day-lightning"></i>
-                                                </span>
-                                        </h4>
-                                        <h5>15
-                                            <i>km/h</i>
-                                        </h5>
-                                    </div>
-                                </div>
-                                <div class="col-lg-2">
-                                    <div class="daily-weather">
-                                        <h2>Tue</h2>
-                                        <h3>81
-                                            <span><i class="wi-fahrenheit"></i>
-                                                </span>
-                                        </h3>
-                                        <h4><i class="wi-day-cloudy"></i>
-                                        </h4>
-                                        <h5>12
-                                            <i>km/h</i>
-                                        </h5>
-                                    </div>
-                                </div>
-                                <div class="col-lg-2">
-                                    <div class="daily-weather">
-                                        <h2>Wed</h2>
-                                        <h3>83
-                                            <span><i class="wi-fahrenheit"></i>
-                                                </span>
-                                        </h3>
-                                        <h4><i class="wi-rain-mix"></i>
-                                        </h4>
-                                        <h5>14
-                                            <i>km/h</i>
-                                        </h5>
-                                    </div>
-                                </div>
-                                <div class="col-lg-2">
-                                    <div class="daily-weather">
-                                        <h2>Thu</h2>
-                                        <h3>80
-                                            <span><i class="wi-fahrenheit"></i>
-                                                </span>
-                                        </h3>
-                                        <h4><i class="wi-day-sunny"></i>
-                                        </h4>
-                                        <h5>15
-                                            <i>km/h</i>
-                                        </h5>
-                                    </div>
-                                </div>
-                                <div class="col-lg-2">
-                                    <div class="daily-weather">
-                                        <h2>Fri</h2>
-                                        <h3>79
-                                            <span><i class="wi-fahrenheit"></i>
-                                                </span>
-                                        </h3>
-                                        <h4><i class="wi-day-storm-showers"></i>
-                                        </h4>
-                                        <h5>11
-                                            <i>km/h</i>
-                                        </h5>
-                                    </div>
-                                </div>
-                                <div class="col-lg-2">
-                                    <div class="daily-weather">
-                                        <h2>Sat</h2>
-                                        <h3>82
-                                            <span><i class="wi-fahrenheit"></i>
-                                                </span>
-                                        </h3>
-                                        <h4><i class="wi-cloudy"></i>
-                                        </h4>
-                                        <h5>10
-                                            <i>km/h</i>
-                                        </h5>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <!-- /END OF CONTENT -->
-
-
-
-            <!-- FOOTER -->
-            <div class="footer-space"></div>
-            <div id="footer">
-                <div class="devider-footer-left"></div>
-                <div class="time">
-                    <p id="spanDate">
-                    <p id="clock">
-                </div>
-                <div class="copyright">Make with Love
-                    <span class="entypo-heart"></span>Collect from <a href="http://www.cssmoban.com/" title="网页模板" target="_blank">网页模板</a> All Rights Reserved</div>
-                <div class="devider-footer"></div>
-
-
-            </div>
-            <!-- / END OF FOOTER -->
-
-
+<!-- 地图底图切换列表 -->
+<input type="checkbox" id="annotation">
+<select class="layerSwitcherDiv" id="layerSwitcherBtn">
+    <option value="terrain">谷歌地形图</option>
+    <option value="vector">谷歌矢量图</option>
+    <option value="raster">谷歌遥感图</option>
+    <option value="road">谷歌交通图</option>
+</select>
+<div class="logoImg"></div>
+<!-- 功能模块面板 start -->
+<div class="containerBack" id="coverLayer"></div>
+<div class="applyImg" id="imgApply">
+    综合应用
+</div>
+<div class="closeDiv">
+    <div class="closeImg" id="closeFun">
+    </div>
+</div>
+<div class="applyContainer" id="comApply">
+    <ul>
+        <li><input class="applyInput" type="checkbox" id="sssq"/><label for="sssq">实时水情</label></li>
+        <li><input class="applyInput" type="checkbox" id="ssyq"/><label for="ssyq">实时雨情</label></li>
+        <li><input class="applyInput" type="checkbox" id="tflj"/><label for="tflj">台风路径</label></li>
+        <li><input class="applyInput" type="checkbox" id="wxyt"/><label for="wxyt">卫星云图</label></li>
+    </ul>
+</div>
+<!-- 功能模块面板 end -->
+<!-- 地图容器-->
+<div id="map">
+    <!-- Popup -->
+    <div id="popup" class="ol-popup" >
+        <div id="popup-closer" class="ol-popup-closer"></div>
+        <div id="popup-content">
         </div>
     </div>
 </div>
-<!--  END OF PAPER WRAP -->
-
-<!-- RIGHT SLIDER CONTENT -->
-<div class="sb-slidebar sb-right">
-    <div class="right-wrapper">
-        <div class="row">
-            <h3>
-                <span><i class="entypo-gauge"></i>&nbsp;&nbsp;MAIN WIDGET</span>
-            </h3>
-            <div class="col-lg-12">
-
-                <div class="widget-knob">
-                        <span class="chart" style="position:relative" data-percent="86">
-                            <span class="percent"></span>
-                        </span>
-                </div>
-                <div class="widget-def">
-                    <b>Distance traveled</b>
-                    <br>
-                    <i>86% to the check point</i>
-                </div>
-
-                <div class="widget-knob">
-                        <span class="speed-car" style="position:relative" data-percent="60">
-                            <span class="percent2"></span>
-                        </span>
-                </div>
-                <div class="widget-def">
-                    <b>The average speed</b>
-                    <br>
-                    <i>30KM/h avarage speed</i>
-                </div>
-
-
-                <div class="widget-knob">
-                        <span class="overall" style="position:relative" data-percent="25">
-                            <span class="percent3"></span>
-                        </span>
-                </div>
-                <div class="widget-def">
-                    <b>Overall result</b>
-                    <br>
-                    <i>30KM/h avarage Result</i>
-                </div>
-            </div>
+<!-- 功能结果展示 -->
+<div class="LabelList">
+    <ul id="labelUL"></ul>
+</div>
+<!-- 实时水情start -->
+<div class="sqDiv">
+    <div class="sqTop">
+        <div class="sqHeader">
+            条件选择</div>
+        <div class="sqContent">
+            <input class="sqCheckBox" id="RverInfo" type="checkbox" />水库
+            <input class="sqCheckBox" id="riverInfo" type="checkbox" checked="checked" />河流
         </div>
     </div>
-
-    <div style="margin-top:0;" class="right-wrapper">
-        <div class="row">
-            <h3>
-                <span><i class="entypo-chat"></i>&nbsp;&nbsp;CHAT</span>
-            </h3>
-            <div class="col-lg-12">
-                <span class="label label-warning label-chat">Online</span>
-                <ul class="chat">
-                    <li>
-                        <a href="#">
-                                <span>
-                                    <img alt="" class="img-chat img-circle" src="http://api.randomuser.me/portraits/thumb/men/20.jpg">
-                                </span><b>Dave Junior</b>
-                            <br><i>Last seen : 08:00 PM</i>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="#">
-                                <span>
-                                    <img alt="" class="img-chat img-circle" src="http://api.randomuser.me/portraits/thumb/men/21.jpg">
-                                </span><b>Kenneth Lucas</b>
-                            <br><i>Last seen : 07:21 PM</i>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="#">
-                                <span>
-                                    <img alt="" class="img-chat img-circle" src="http://api.randomuser.me/portraits/thumb/men/22.jpg">
-                                </span><b>Heidi Perez</b>
-                            <br><i>Last seen : 05:43 PM</i>
-                        </a>
-                    </li>
-
-
-                </ul>
-
-                <span class="label label-chat">Offline</span>
-                <ul class="chat">
-                    <li>
-                        <a href="#">
-                                <span>
-                                    <img alt="" class="img-chat img-offline img-circle" src="http://api.randomuser.me/portraits/thumb/men/23.jpg">
-                                </span><b>Dave Junior</b>
-                            <br><i>Last seen : 08:00 PM</i>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="#">
-                                <span>
-                                    <img alt="" class="img-chat img-offline img-circle" src="http://api.randomuser.me/portraits/thumb/women/24.jpg">
-                                </span><b>Kenneth Lucas</b>
-                            <br><i>Last seen : 07:21 PM</i>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="#">
-                                <span>
-                                    <img alt="" class="img-chat img-offline img-circle" src="http://api.randomuser.me/portraits/thumb/men/25.jpg">
-                                </span><b>Heidi Perez</b>
-                            <br><i>Last seen : 05:43 PM</i>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="#">
-                                <span>
-                                    <img alt="" class="img-chat img-offline img-circle" src="http://api.randomuser.me/portraits/thumb/women/25.jpg">
-                                </span><b>Kenneth Lucas</b>
-                            <br><i>Last seen : 07:21 PM</i>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="#">
-                                <span>
-                                    <img alt="" class="img-chat img-offline img-circle" src="http://api.randomuser.me/portraits/thumb/men/26.jpg">
-                                </span><b>Heidi Perez</b>
-                            <br><i>Last seen : 05:43 PM</i>
-                        </a>
-                    </li>
-
-                </ul>
+    <div class="sqMain">
+        <div class="skxx">
+            <div class="sqHeader" >
+                水库信息(单位：m)</div>
+            <div class="hlxxContent" id="skxxTab">
+            </div>
+        </div>
+        <div class="hlxx">
+            <div class="sqHeader" >
+                河流信息(单位：m)
+            </div>
+            <div class="hlxxContent" id="hlxxTab">
             </div>
         </div>
     </div>
 </div>
-
-<!-- END OF RIGHT SLIDER CONTENT-->
-<script type="text/javascript" src="assets/js/jquery.js"></script>
-<script src="assets/js/progress-bar/src/jquery.velocity.min.js"></script>
-<script src="assets/js/progress-bar/number-pb.js"></script>
-<script src="assets/js/progress-bar/progress-app.js"></script>
-
-
-
-<!-- MAIN EFFECT -->
-<script type="text/javascript" src="assets/js/preloader.js"></script>
-<script type="text/javascript" src="assets/js/bootstrap.js"></script>
-<script type="text/javascript" src="assets/js/app.js"></script>
-<script type="text/javascript" src="assets/js/load.js"></script>
-<script type="text/javascript" src="assets/js/main.js"></script>
-
-
-
-
-<!-- GAGE -->
-
-
-<script type="text/javascript" src="assets/js/chart/jquery.flot.js"></script>
-<script type="text/javascript" src="assets/js/chart/jquery.flot.resize.js"></script>
-<script type="text/javascript" src="assets/js/chart/realTime.js"></script>
-<script type="text/javascript" src="assets/js/speed/canvasgauge-coustom.js"></script>
-<script type="text/javascript" src="assets/js/countdown/jquery.countdown.js"></script>
-
-
-
-<script src="assets/js/jhere-custom.js"></script>
-
-<script>
-    var gauge4 = new Gauge("canvas4", {
-        'mode': 'needle',
-        'range': {
-            'min': 0,
-            'max': 90
-        }
-    });
-    gauge4.draw(Math.floor(Math.random() * 90));
-    var run = setInterval(function() {
-        gauge4.draw(Math.floor(Math.random() * 90));
-    }, 3500);
-</script>
-
-
-<script type="text/javascript">
-    /* Javascript
-     *
-     * See http://jhere.net/docs.html for full documentation
-     */
-    $(window).on('load', function() {
-        $('#mapContainer').jHERE({
-            center: [52.500556, 13.398889],
-            type: 'smart',
-            zoom: 10
-        }).jHERE('marker', [52.500556, 13.338889], {
-            icon: 'assets/img/marker.png',
-            anchor: {
-                x: 12,
-                y: 32
-            },
-            click: function() {
-                alert('Hallo from Berlin!');
-            }
-        })
-            .jHERE('route', [52.711, 13.011], [52.514, 13.453], {
-                color: '#FFA200',
-                marker: {
-                    fill: '#86c440',
-                    text: '#'
-                }
-            });
-    });
-</script>
-<script type="text/javascript">
-    var output, started, duration, desired;
-
-    // Constants
-    duration = 5000;
-    desired = '50';
-
-    // Initial setup
-    output = $('#speed');
-    started = new Date().getTime();
-
-    // Animate!
-    animationTimer = setInterval(function() {
-        // If the value is what we want, stop animating
-        // or if the duration has been exceeded, stop animating
-        if (output.text().trim() === desired || new Date().getTime() - started > duration) {
-            console.log('animating');
-            // Generate a random string to use for the next animation step
-            output.text('' + Math.floor(Math.random() * 60)
-
-            );
-
-        } else {
-            console.log('animating');
-            // Generate a random string to use for the next animation step
-            output.text('' + Math.floor(Math.random() * 120)
-
-            );
-        }
-    }, 5000);
-</script>
-<script type="text/javascript">
-    $('#getting-started').countdown('2015/01/01', function(event) {
-        $(this).html(event.strftime(
-
-            '<span>%M</span>' + '<span class="start-min">:</span>' + '<span class="start-min">%S</span>'));
-    });
-</script>
-
-<div style="text-align:center;">
-    <p>More Templates <a href="http://www.cssmoban.com/" target="_blank" title="模板之家">模板之家</a> - Collect from <a href="http://www.cssmoban.com/" title="网页模板" target="_blank">网页模板</a></p>
+<div class="sqSplitDiv" id="sqSplitBtn"></div>
+<!-- 实时水情end -->
+<!-- 实时雨情statr -->
+<div class="ssyqDiv" id="ssyqFun">
+    <div class="yqTop">
+        <div class="sqHeader">
+            条件选择</div>
+        <div class="yqTopTime">
+            &nbsp&nbsp 从<input id="ssyqfrom1" name="from" type="text" value="2008-05-16 " />
+            <select id="fromTime">
+            </select><br />
+            <br />
+            &nbsp&nbsp 到<input id="ssyqfrom2" name="from" type="text" value="2008-05-16 " />
+            <select id="toTime">
+            </select>
+        </div>
+    </div>
+    <div class="yqCnter">
+        <div class="sqHeader">
+            雨量范围（单位：mm）</div>
+        <div class="yqContent">
+            <ul>
+                <li style="background: url('images/shishiyuqing/yq00.png') no-repeat;">
+                    <input class="ylxxCheckbox" type="checkbox" value="0"/>0</li>
+                <li style="background: url('images/shishiyuqing/yq01.png') no-repeat;">
+                    <input class="ylxxCheckbox" type="checkbox" value="10"/>10</li>
+                <li style="background: url('images/shishiyuqing/yq02.png') no-repeat;">
+                    <input class="ylxxCheckbox" type="checkbox" value="25"/>25</li>
+                <li style="background: url('images/shishiyuqing/yq03.png') no-repeat;">
+                    <input class="ylxxCheckbox" type="checkbox" value="50"/>50</li>
+                <li style="background: url('images/shishiyuqing/yq04.png') no-repeat;">
+                    <input class="ylxxCheckbox" type="checkbox" value="100"
+                           checked="true" />100</li>
+                <li style="background: url('images/shishiyuqing/yq05.png') no-repeat;">
+                    <input class="ylxxCheckbox" type="checkbox" value="250"/>250</li>
+                <li style="background: url('images/shishiyuqing/yq06.png') no-repeat;">
+                    <input class="ylxxCheckbox" type="checkbox" value="260"/>250以上</li>
+            </ul>
+        </div>
+    </div>
+    <div class="yqBottom">
+        <div id="ylxx">
+            <div class="yqHeader">
+                雨量信息(单位：mm)</div>
+            <div class="ylxxContent" id="ylxxTab" style="display: block">
+            </div>
+        </div>
+        <div id="gszdyl">
+            <div class="yqHeader">
+                各市最大雨量</div>
+            <div class="ylxxContent" id="gszdylTab">
+            </div>
+        </div>
+        <div id="ljtj">
+            <div class="yqHeader">
+                量级统计</div>
+            <div class="ylxxContent" id="ljtjTab">
+                <table id="ljtjTable">
+                    <tr class='ssyqTrInfo c'>
+                        <th>
+                            雨量范围（单位：mm）
+                        </th>
+                        <th>
+                            区县数
+                        </th>
+                    </tr>
+                    <tr class='ssyqTrInfo c'>
+                        <td>
+                            0.1-9.9
+                        </td>
+                        <td id="tr0">
+                            0
+                        </td>
+                    </tr>
+                    <tr class='ssyqTrInfo c'>
+                        <td>
+                            10-24.0
+                        </td>
+                        <td id="tr1">
+                            0
+                        </td>
+                    </tr>
+                    <tr class='ssyqTrInfo c'>
+                        <td>
+                            25-49.9
+                        </td>
+                        <td id="tr2">
+                            0
+                        </td>
+                    </tr>
+                    <tr class='ssyqTrInfo c'>
+                        <td>
+                            50-99.9
+                        </td>
+                        <td id="tr3">
+                            0
+                        </td>
+                    </tr>
+                    <tr class='ssyqTrInfo c'>
+                        <td>
+                            100-249.9
+                        </td>
+                        <td id="tr4">
+                            0
+                        </td>
+                    </tr>
+                    <tr class='ssyqTrInfo c'>
+                        <td>
+                            250以上
+                        </td>
+                        <td id="tr5">
+                            0
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
 </div>
+<!-- 实时雨情end -->
+<!-- 台风路径start -->
+<div class="tfDiv">
+    <div class="tuliCoverLayer" id="tuliCoverLayer"></div>
+    <div class="tuliDiv">
+        <div class="tuliHeader">
+            台风图例
+        </div>
+        <div class="closeDivTF">
+            <div class="closeImgTF" id="closeFunTF">
+            </div>
+        </div>
+        <div class="tuliContent">
+            <ul>
+                <li style="background: url('images/taifeng/Wind01.png') no-repeat;">超强台风</li>
+                <li style="background: url('images/taifeng/Wind03.png') no-repeat;">强台风</li>
+                <li style="background: url('images/taifeng/Wind02.png') no-repeat;">台风</li>
+                <li style="background: url('images/taifeng/Wind04.png') no-repeat;">强热带风暴</li>
+                <li style="background: url('images/taifeng/Wind05.png') no-repeat;">热带风暴</li>
+                <li style="background: url('images/taifeng/Wind06.png') no-repeat;">热带气压</li>
+            </ul>
+        </div>
+    </div>
+    <div class="tfRightDiv">
+        <div class="choiceDiv">
+            <div class="tfHeader">
+                条件选择
+            </div>
+            <div class="tftjxzContent" id="tftjxzTab">
+            </div>
+        </div>
+        <div class="resDiv">
+            <div class="tfHeader">
+                台风路径
+            </div>
+            <div class="tfljContent" id="tfljTab">
+            </div>
+        </div>
+    </div>
+</div>
+<!-- 台风路径end -->
+<!-- 卫星云图start -->
+<div id="dialog" title="卫星云图">
+    <iframe id="wxytIframe"></iframe>
+</div>
+<!-- 卫星云图end -->
+<!-- 系统功能库 -->
+<script src="js/SLSysFun.js" type="text/javascript"></script>
 </body>
 </html>
