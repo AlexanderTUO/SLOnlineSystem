@@ -13,6 +13,9 @@ spring:
 mybatis:
   type-aliases-package: com.nice.demo.bean
   mapper-locations: mapper/*.xml
+#  configuration:
+#    map-underscore-to-camel-case:true
+
 
 devtools:
   livereload:
