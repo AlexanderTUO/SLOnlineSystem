@@ -11,6 +11,7 @@
 <head>
     <title>水利信息在线分析服务系统</title>
     <link href="lib/jquery-ui-1.12.1/jquery-ui.css" rel="stylesheet" type="text/css" />
+    <link type="text/css" rel="stylesheet" href="lib/bootstrap-3.3.7-dist/css/bootstrap.css" />
     <link href="css/style.css" rel="stylesheet" type="text/css" />
     <!-- jQuery库 -->
     <script src="lib/jquery-3.3.1.min.js" type="text/javascript"></script>
@@ -26,6 +27,15 @@
     <!-- 第三方插件库 -->
     <script src="lib/jquery-ui-1.12.1/jquery-ui.js" type="text/javascript"></script>
     <%--<script src="Libs/jquery.ui.datepicker-zh-CN.js" type="text/javascript"></script>--%>
+
+    <%--bootstrap库--%>
+    <script src="lib/bootstrap-3.3.7-dist/js/bootstrap.js" type="text/javascript"></script>
+
+    <%--datatable--%>
+    <%--<link href="//cdn.datatables.net/1.10.15/css/jquery.dataTables.min.css" rel="stylesheet">--%>
+    <%--<script type="text/javascript" src="//cdn.datatables.net/1.10.15/js/jquery.dataTables.min.js"></script>   --%>
+    <link href="lib/datatable/jquery.dataTables.css" rel="stylesheet">
+    <script type="text/javascript" src="lib/datatable/jquery.dataTables.js"></script>
 </head>
 <body>
 <div class="backgroundDiv">
@@ -85,6 +95,14 @@
             <div class="sqHeader" >
                 水库信息(单位：m)</div>
             <div class="hlxxContent" id="skxxTab">
+                <table id="reservoir">
+                    <thead>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </thead>
+                </table>
             </div>
         </div>
         <div class="hlxx">

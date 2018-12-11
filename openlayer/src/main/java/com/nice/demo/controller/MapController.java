@@ -54,4 +54,10 @@ public class MapController {
         return "heatMap";
     }
 
+    @RequestMapping("dt")
+    public String dt() {
+        return "dataTable";
+    }
+
+
 }

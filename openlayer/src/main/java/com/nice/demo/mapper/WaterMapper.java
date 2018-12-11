@@ -26,4 +26,11 @@ public interface WaterMapper {
      * @return
      */
     WaterEntity getWaterBySite(String site);
+
+    /**
+     * 根据水情类型查询水情信息行数
+     * @param type 水情类型
+     * @return
+     */
+    Integer getWaterRows(@Param("type") String type);
 }

@@ -20,7 +20,7 @@ public class WaterEntity {
     private String city;
     private String suboffice;
     private String address;
-    private double watetPos;
+    private double waterPos;
     private double normalNum;
     private Timestamp time;
 

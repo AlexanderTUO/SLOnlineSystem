@@ -26,6 +26,11 @@ public class WaterServiceImpl implements WaterService {
 
     @Override
     public WaterEntity getWaterBySite(String site) {
-        return null;
+        return waterMapper.getWaterBySite(site);
+    }
+
+    @Override
+    public Integer getWaterRows(String type) {
+        return waterMapper.getWaterRows(type);
     }
 }

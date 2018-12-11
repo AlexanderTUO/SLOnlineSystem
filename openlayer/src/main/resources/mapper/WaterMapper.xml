@@ -2,7 +2,25 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.nice.demo.mapper.WaterMapper">
     <select id="getWaterInfo" resultType="com.nice.demo.entity.WaterEntity">
-        SELECT * FROM waterinfo_view WHERE category = #{type}
+        SELECT `waterinfo_view`.`stationCode`,
+        `waterinfo_view`.`stationName`,
+        `waterinfo_view`.`longitude`,
+        `waterinfo_view`.`latitude`,
+        `waterinfo_view`.`riverName`,
+        `waterinfo_view`.`category`,
+        `waterinfo_view`.`city`,
+        `waterinfo_view`.`suboffice`,
+        `waterinfo_view`.`address`,
+        `waterinfo_view`.`waterPos`,
+        `waterinfo_view`.`normalNum`,
+        `waterinfo_view`.`time`
+        FROM `waterinfo_view`
+        WHERE category = #{type};
     </select>
+
+    <select id="getWaterRows" resultType="Integer">
+        select count(1) from `waterinfo_view` where category = #{type}
+    </select>
+
 </mapper>
 

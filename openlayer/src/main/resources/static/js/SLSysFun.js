@@ -120,4 +120,65 @@ $(function () {
             map.removeLayer(annotationLayer);
         }
     })
+
+
+    var type='zz';
+    // 初始化实时水情表格
+    var reservoirTable;
+    reservoirTable = $("#reservoir").DataTable({
+        ajax: {
+            url: "/water/getWaterInfo",
+            // url: "https://api.github.com/repos/ssy341/datatables-cn/issues",
+            type: "post",
+            data: {
+                type: "zz"
+            },
+            dataSrc: ""
+        },
+        //默认最后一列（最后更新时间）降序排列
+        // order: [[ 2, "desc" ]],
+        columnDefs: [
+            {
+                targets: 0,
+                data: "stationCode",
+                title: "站码",
+            },
+            {
+                targets: 1,
+                data: "stationName",
+                title: "站名",
+            },
+            {
+                targets: 2,
+                data: "riverName",
+                title: "河流名",
+            },
+            {
+                targets: 3,
+                data: "category",
+                title: "分类",
+            },
+        ]
+
+    });
+
+    // 绑定实时水情切换按钮
+    $("#sssq").change(function () {
+        var sssq = $("#sssq").prop('checked');
+        var reservoirInfo = $("#RverInfo").prop('checked');
+        var riverInfo = $("#riverInfo").prop('checked');
+        var flag = false;
+        if (sssq) {
+            if (reservoirInfo&&!riverInfo) {
+                alert(232)
+                reservoirTable.ajax.reload(null,false);
+            }
+        }
+    })
+
+
+
+
+
+
 })
