@@ -33,10 +33,10 @@
 <!-- 地图底图切换列表 -->
 <input type="checkbox" id="annotation">
 <select class="layerSwitcherDiv" id="layerSwitcherBtn">
+    <option value="road" selected="selected">谷歌交通图</option>
     <option value="terrain">谷歌地形图</option>
     <option value="vector">谷歌矢量图</option>
     <option value="raster">谷歌遥感图</option>
-    <option value="road">谷歌交通图</option>
 </select>
 <div class="logoImg"></div>
 <!-- 功能模块面板 start -->
