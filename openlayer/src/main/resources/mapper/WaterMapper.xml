@@ -15,12 +15,21 @@
         `waterinfo_view`.`normalNum`,
         `waterinfo_view`.`time`
         FROM `waterinfo_view`
-        WHERE category = #{type};
+        <include refid="condition"></include>
     </select>
 
     <select id="getWaterRows" resultType="Integer">
-        select count(1) from `waterinfo_view` where category = #{type}
+        select count(1) from `waterinfo_view`
+        <include refid="condition"></include>
     </select>
+
+    <sql id="condition">
+        <where>
+            <if test="type!=null and type!=''">
+                and category = #{type,jdbcType=VARCHAR}
+            </if>
+        </where>
+    </sql>
 
 </mapper>
 

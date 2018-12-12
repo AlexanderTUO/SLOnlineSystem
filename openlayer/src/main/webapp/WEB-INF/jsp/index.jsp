@@ -86,7 +86,7 @@
         <div class="sqHeader">
             条件选择</div>
         <div class="sqContent">
-            <input class="sqCheckBox" id="RverInfo" type="checkbox" />水库
+            <input class="sqCheckBox" id="RverInfo" type="checkbox"/>水库
             <input class="sqCheckBox" id="riverInfo" type="checkbox" checked="checked" />河流
         </div>
     </div>

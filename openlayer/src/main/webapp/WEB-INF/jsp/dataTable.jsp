@@ -31,7 +31,7 @@
        });
 
        //DataTables初始化
-       $("#issueTable").DataTable({
+       var issueTable = $("#issueTable").DataTable({
            ajax: {
                url: "/water/getWaterInfo",
                // url: "https://api.github.com/repos/ssy341/datatables-cn/issues",
@@ -45,9 +45,9 @@
            // order: [[ 2, "desc" ]],
            columnDefs: [
                {
-                       targets: 0,
-                       data: "stationCode",
-                       title: "站码",
+                   targets: 0,
+                   data: "stationCode",
+                   title: "站码",
                },
                {
                    targets: 1,
@@ -106,7 +106,7 @@
                //     }
                // }
            ],
-           initComplete:function(){
+           initComplete: function () {
                $("#toolbar").append("<a href='https://github.com/ssy341/datatables-cn/issues/new' " +
                    "class='btn btn-primary btn-sm'>我也要提问</a>");
            }

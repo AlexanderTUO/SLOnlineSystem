@@ -13,8 +13,8 @@ import java.sql.Timestamp;
 public class WaterEntity {
     private String stationCode;
     private String stationName;
-    private String longitude;
-    private String latitude;
+    private String longitude;//经度
+    private String latitude;//纬度
     private String riverName;
     private String category;
     private String city;
