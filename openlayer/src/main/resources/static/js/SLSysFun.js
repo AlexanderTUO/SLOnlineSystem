@@ -122,113 +122,192 @@ $(function () {
     })
 
 
-    var type="";
-    var data = {
-        type: type
-    };
-    // 初始化实时水情表格
-    var reservoirTable;
-    reservoirTable = $("#reservoir").DataTable({
-        ajax: {
-            url: "/water/getWaterInfo?type="+type,
-            // url: "https://api.github.com/repos/ssy341/datatables-cn/issues",
-            type: "get",
-            // data: {
-            //     type: type
-            // },
-            dataSrc: ""
-        },
-        //默认最后一列（最后更新时间）降序排列
-        // order: [[ 2, "desc" ]],
-        columnDefs: [
-            {
-                targets: 0,
-                data: "stationCode",
-                title: "站码",
-            },
-            {
-                targets: 1,
-                data: "stationName",
-                title: "站名",
-            },
-            {
-                targets: 2,
-                data: "riverName",
-                title: "河流名",
-            },
-            {
-                targets: 3,
-                data: "category",
-                title: "分类",
-            },
-        ]
+    var reservoirInfo;
+    var riverInfo;
 
-    });
+    var type;
 
+    function waterChoose() {
+        reservoirInfo = $("#RverInfo").prop('checked');
+        riverInfo = $("#riverInfo").prop('checked');
 
-    var reservoirInfo = $("#RverInfo").prop('checked');
-    var riverInfo = $("#riverInfo").prop('checked');
-    // 绑定实时水情切换按钮
+        if (riverInfo) {//河流选中
+            type = "rr";
+            $.ajax({
+                url: "/water/getWaterInfo",
+                type: "post",
+                data: {
+                    type: "rr",
+                },
+                success: function (data) {
+                    addMarkers(data);
+                }
+            })
+        }else{
+            type = "wu";
+            addMarkers(null);
+        }
+
+        if (reservoirInfo) {//水库选中
+            type = "zz";
+            $.ajax({
+                url: "/water/getWaterInfo",
+                type: "post",
+                data: {
+                    type: "zz",
+                },
+                success: function (data) {
+                    addMarkers(data);
+                }
+            });
+        } else {
+            type = "wu";
+        }
+
+    }
+
+// 绑定实时水情切换按钮
     $("#sssq").change(function () {
         var sssq = $("#sssq").prop('checked');
-        $(".sqDiv").show();
-        $(".hlxxContent").show();
+
+        reservoirInfo = $("#RverInfo").prop('checked');
+        riverInfo = $("#riverInfo").prop('checked');
+
         if (sssq) {
-            if (!reservoirInfo && riverInfo) {//河流选中
-                type = "zz";
-                reservoirTable.ajax.url("/water/getWaterInfo?type="+type).load();
-                $.ajax({
-                    url: "/water/getWaterInfo",
-                    type: "post",
-                    data: {
-                        type: "zz",
-                    },
-                    success: function (data) {
-                        addMarkers(data, reservoirInfo, riverInfo);
-                    }
-                })
-            } else if (reservoirInfo && !riverInfo) {//水库选中
-                type = "pp";
-                reservoirTable.ajax.url("/water/getWaterInfo?type="+type).load();
-                $.ajax({
-                    url: "/water/getWaterInfo",
-                    type: "post",
-                    data: {
-                        type: "pp",
-                    },
-                    success: function (data) {
-                        addMarkers(data, reservoirInfo, riverInfo);
-                    }
-                });
-            } else if (reservoirInfo && riverInfo) {//都选中
-                type = "";
-                reservoirTable.ajax.url("/water/getWaterInfo?type="+type).load();
-                $.ajax({
-                    url: "/water/getWaterInfo",
-                    type: "post",
-                    data: {
-                        type: ""
-                    },
-                    success: function (data) {
-                        addMarkers(data, reservoirInfo, riverInfo);
-                    }
-                });
+            // waterChoose();
+            if (riverInfo){
+                type = "rr";
+                queryWaterInfo(type);
+            }else {
+                type = "wu";
+                queryWaterInfo(type);
             }
+
+            if (reservoirInfo){
+                type = "zz";
+                queryWaterInfo(type);
+            }else {
+                type = "wu";
+                queryWaterInfo(type);
+            }
+
+            $(".sqDiv").show();
+            $(".hlxxContent").show();
+
         } else {//不选中实时水情
             $(".sqDiv").hide();
             $(".hlxxContent").hide();
         }
     })
+    
+    function queryWaterInfo(type) {
 
-    var ssslLayer=null;
-    function addMarkers(waterInfo,reservoirInfo,riverInfo) {
-        var source = new ol.source.Vector();
-        if (ssslLayer == null) {
-            ssslLayer = new ol.layer.Vector({
-                source: source
+        if (type=="zz") {
+            $.ajax({
+                url: "/water/getWaterInfo?type=" + type,
+                type: "get",
+                success:function (waterInfo) {
+                    addMarkers(waterInfo);
+                    // addToTable(type);
+                }
             })
+            $("#reservoir").DataTable({
+                ajax: {
+                    url: "/water/getWaterInfo?type="+type,
+                    type: "get",
+                    dataSrc: ""
+                },
+                //默认最后一列（最后更新时间）降序排列
+                // order: [[ 2, "desc" ]],
+                columnDefs: [
+                    {
+                        targets: 0,
+                        data: "stationCode",
+                        title: "站码",
+                    },
+                    {
+                        targets: 1,
+                        data: "stationName",
+                        title: "站名",
+                    },
+                    {
+                        targets: 2,
+                        data: "riverName",
+                        title: "河流名",
+                    },
+                    {
+                        targets: 3,
+                        data: "category",
+                        title: "分类",
+                    },
+                ]
+
+            });
+        };
+        if (type=="rr") {
+            $.ajax({
+                url: "/water/getWaterInfo?type=" + type,
+                type: "get",
+                success:function (waterInfo) {
+                    addMarkers(waterInfo);
+                    // addToTable(type);
+                }
+            })
+            $("#river").DataTable({
+                ajax: {
+                    url: "/water/getWaterInfo?type="+type,
+                    type: "get",
+                    dataSrc: ""
+                },
+                //默认最后一列（最后更新时间）降序排列
+                // order: [[ 2, "desc" ]],
+                columnDefs: [
+                    {
+                        targets: 0,
+                        data: "stationCode",
+                        title: "站码",
+                    },
+                    {
+                        targets: 1,
+                        data: "stationName",
+                        title: "站名",
+                    },
+                    {
+                        targets: 2,
+                        data: "riverName",
+                        title: "河流名",
+                    },
+                    {
+                        targets: 3,
+                        data: "category",
+                        title: "分类",
+                    },
+                ]
+
+            });
+        };
+
+
+    }
+
+    var ssslLayer;
+
+    function addMarkers(waterInfo) {
+        if (ssslLayer == null) {
+            ssslLayer =  new ol.layer.Vector({
+                source: new ol.source.Vector()
+            })
+            map.addLayer(ssslLayer);
         }
+
+        var ssslSource = new ol.source.Vector();
+
+        reservoirInfo = $("#RverInfo").prop('checked');
+        riverInfo = $("#riverInfo").prop('checked');
         // var markerFeature;
+        var riverFeature;
+        var reservoirFeature;
+
         if (riverInfo) {
             for (var index = 0; index < waterInfo.length; index++) {
                 var lon = waterInfo[index].longitude;
@@ -239,7 +318,7 @@ $(function () {
                 if (waterInfo[index].waterPos < waterInfo[index].normalNum) {
                     imgURL = "images/sssq-red.png";
                 }
-                var markerFeature = new ol.Feature({
+                riverFeature = new ol.Feature({
                     geometry: point,
                     name:waterInfo[index].riverName,
                     type: "river",
@@ -247,100 +326,78 @@ $(function () {
                     info: waterInfo[index],
                     fid: "river" + index.toString()
                 })
-                markerFeature.setStyle(new ol.style.Style({
+                riverFeature.setStyle(new ol.style.Style({
                     image: new ol.style.Icon({
                         src: imgURL
                     })
                 }));
-                source.addFeature(markerFeature);
+                ssslSource.addFeature(riverFeature);
             }
         }
+
+        if (reservoirInfo) {
+            for (var index = 0; index < waterInfo.length; index++) {
+                var lon = waterInfo[index].longitude;
+                var lat = waterInfo[index].latitude;
+                var point = new ol.geom.Point([parseFloat(lon), parseFloat(lat)]);
+
+                var imgURL = "images/sssq-green.png";
+                if (waterInfo[index].waterPos < waterInfo[index].normalNum) {
+                    imgURL = "images/sssq-red.png";
+                }
+                reservoirFeature = new ol.Feature({
+                    geometry: point,
+                    name:waterInfo[index].riverName,
+                    type: "reservoir",
+                    imgURL:imgURL,
+                    info: waterInfo[index],
+                    fid: "reservoir" + index.toString()
+                })
+                reservoirFeature.setStyle(new ol.style.Style({
+                    image: new ol.style.Icon({
+                        src: imgURL
+                    })
+                }));
+                ssslSource.addFeature(reservoirFeature);
+            }
+        }
+        ssslLayer.setSource(ssslSource);
         map.addLayer(ssslLayer);
     }
 
     $("#RverInfo").change(function () {
-        if (!reservoirInfo && riverInfo) {//河流选中
+        if (riverInfo){
+            type = "rr";
+            queryWaterInfo(type);
+        }else {
+            type = "wu";
+            queryWaterInfo(type);
+        }
+
+        if (reservoirInfo){
             type = "zz";
-            reservoirTable.ajax.url("/water/getWaterInfo?type="+type).load();
-            $.ajax({
-                url: "/water/getWaterInfo",
-                type: "post",
-                data: {
-                    type: "zz",
-                },
-                success: function (data) {
-                    addMarkers(data, reservoirInfo, riverInfo);
-                }
-            })
-        } else if (reservoirInfo && !riverInfo) {//水库选中
-            type = "pp";
-            reservoirTable.ajax.url("/water/getWaterInfo?type="+type).load();
-            $.ajax({
-                url: "/water/getWaterInfo",
-                type: "post",
-                data: {
-                    type: "pp",
-                },
-                success: function (data) {
-                    addMarkers(data, reservoirInfo, riverInfo);
-                }
-            });
-        } else if (reservoirInfo && riverInfo) {//都选中
-            type = "";
-            reservoirTable.ajax.url("/water/getWaterInfo?type="+type).load();
-            $.ajax({
-                url: "/water/getWaterInfo",
-                type: "post",
-                data: {
-                    type: ""
-                },
-                success: function (data) {
-                    addMarkers(data, reservoirInfo, riverInfo);
-                }
-            });
+            queryWaterInfo(type);
+        }else {
+            type = "wu";
+            queryWaterInfo(type);
         }
     })
 
     $("#riverInfo").change(function () {
-        if (!reservoirInfo && riverInfo) {//河流选中
+        if (riverInfo){
+            type = "rr";
+            queryWaterInfo(type);
+        }else {
+            type = "wu";
+            queryWaterInfo(type);
+        }
+
+        if (reservoirInfo){
             type = "zz";
-            reservoirTable.ajax.url("/water/getWaterInfo?type="+type).load();
-            $.ajax({
-                url: "/water/getWaterInfo",
-                type: "post",
-                data: {
-                    type: "zz",
-                },
-                success: function (data) {
-                    addMarkers(data, reservoirInfo, riverInfo);
-                }
-            })
-        } else if (reservoirInfo && !riverInfo) {//水库选中
-            type = "pp";
-            reservoirTable.ajax.url("/water/getWaterInfo?type="+type).load();
-            $.ajax({
-                url: "/water/getWaterInfo",
-                type: "post",
-                data: {
-                    type: "pp",
-                },
-                success: function (data) {
-                    addMarkers(data, reservoirInfo, riverInfo);
-                }
-            });
-        } else if (reservoirInfo && riverInfo) {//都选中
-            type = "";
-            reservoirTable.ajax.url("/water/getWaterInfo?type="+type).load();
-            $.ajax({
-                url: "/water/getWaterInfo",
-                type: "post",
-                data: {
-                    type: ""
-                },
-                success: function (data) {
-                    addMarkers(data, reservoirInfo, riverInfo);
-                }
-            });
+            queryWaterInfo(type);
+        }else {
+            type = "wu";
+            queryWaterInfo(type);
         }
     })
 

@@ -110,6 +110,14 @@
                 河流信息(单位：m)
             </div>
             <div class="hlxxContent" id="hlxxTab">
+                <table id="river">
+                    <thead>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </thead>
+                </table>
             </div>
         </div>
     </div>
