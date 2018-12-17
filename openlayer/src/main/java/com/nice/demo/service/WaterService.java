@@ -19,10 +19,11 @@ public interface WaterService {
 
     /**
      * 根据站点查询水情信息
+     * @param type
      * @param site
      * @return
      */
-    WaterEntity getWaterBySite(String site);
+    List<WaterEntity> getWaterBySite(String type,String site);
 
     /**
      * 根据水情类型查询水情信息行数

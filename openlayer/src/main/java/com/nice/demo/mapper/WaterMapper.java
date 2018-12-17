@@ -22,10 +22,11 @@ public interface WaterMapper {
 
     /**
      * 根据站点查询水情信息
+     * @param type
      * @param site
      * @return
      */
-    WaterEntity getWaterBySite(String site);
+    List<WaterEntity> getWaterBySite(@Param("type")String type,@Param("site")String site);
 
     /**
      * 根据水情类型查询水情信息行数

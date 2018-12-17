@@ -13,7 +13,7 @@
         `waterinfo_view`.`address`,
         `waterinfo_view`.`waterPos`,
         `waterinfo_view`.`normalNum`,
-        `waterinfo_view`.`time`
+        `waterinfo_view`.`wateTime`
         FROM `waterinfo_view`
         <include refid="condition"></include>
     </select>
@@ -30,6 +30,23 @@
             </if>
         </where>
     </sql>
+
+    <select id="getWaterBySite" resultType="com.nice.demo.entity.WaterEntity">
+        SELECT `waterinfo_view`.`stationCode`,
+        `waterinfo_view`.`stationName`,
+        `waterinfo_view`.`longitude`,
+        `waterinfo_view`.`latitude`,
+        `waterinfo_view`.`riverName`,
+        `waterinfo_view`.`category`,
+        `waterinfo_view`.`city`,
+        `waterinfo_view`.`suboffice`,
+        `waterinfo_view`.`address`,
+        `waterinfo_view`.`waterPos`,
+        `waterinfo_view`.`normalNum`,
+        `waterinfo_view`.`wateTime`
+        FROM `waterinfo_view`
+        where category = #{type} and stationCode = #{site}
+    </select>
 
 </mapper>
 

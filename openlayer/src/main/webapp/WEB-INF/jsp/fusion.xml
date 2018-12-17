@@ -1,0 +1,92 @@
+<chart caption="价值保有率2016" showvalues="0" showlabels="1" labelStep="3" rotateLabels="0" numberSuffix="￥" snumbersuffix="%" decimals="3" setadaptiveymin="1" setadaptivesymin="1" linethickness="5" showborder="0">
+    <categories>
+        <category name="" label="拍照月" />
+        <category name="" label="2016年1月" />
+        <category name="" label="2016年2月" />
+        <category name="" label="2016年3月" />
+        <category name="" label="2016年4月" />
+        <category name="" label="2016年5月" />
+        <category name="" label="2016年6月" />
+        <category name="" label="2016年7月" />
+        <category name="" label="2016年8月" />
+        <category name="" label="2016年9月" />
+        <category name="" label="2016年10月" />
+        <category name="" label="2016年11月" />
+        <category name="" label="2016年12月" />
+    </categories>
+    <dataset seriesname="实际">
+        <set value="318993566.08" />
+        <set value="323942901.40" />
+        <set value="317073671.93" />
+        <set value="320178757.03" />
+        <set value="306341280.07" />
+        <set value="302826663.93" />
+        <set value="302830683.65" />
+        <set value="300917737.23" />
+        <set value="298008104.75" />
+        <set value="289682327.54" />
+        <set value="285146693.08" />
+        <set value="277049331.04" />
+        <set value="263401831.83" />
+    </dataset>
+    <dataset  seriesname="显示">
+        <set value="478490349.12"/>
+        <set value="485914352.10"/>
+        <set value="475610507.90"/>
+        <set value="480268135.55"/>
+        <set value="459511920.10"/>
+        <set value="454239995.89"/>
+        <set value="454246025.48"/>
+        <set value="451376605.85"/>
+        <set value="447012157.13"/>
+        <set value="434523491.31"/>
+        <set value="427720039.62"/>
+        <set vale="1553996.56"/>
+        <set value="395102747.75"/>
+    </dataset>
+    <dataset parentyaxis="S" seriesname="保有率" renderas="Line">
+        <set value=""/>
+        <set value="101.55"/>
+        <set value="104.91"/>
+        <set value="102.07"/>
+        <set value="102.66"/>
+        <set value="102.80"/>
+        <set value="101.93"/>
+        <set value="101.10"/>
+        <set value="100.61"/>
+        <set value=" 96.20"/>
+        <set value=" 95.52"/>
+        <set value=" 94.73"/>
+        <set value=" 93.72"/>
+    </dataset>
+    <dataset parentyaxis="S" seriesname="2016" renderas="Line">
+        <set value=""/>
+        <set value="101.56"/>
+        <set value="100.48"/>
+        <set value="100.45"/>
+        <set value="99.34"/>
+        <set value="98.46"/>
+        <set value="97.87"/>
+        <set value="97.37"/>
+        <set value=""/>
+        <set value=""/>
+        <set value=""/>
+        <set value=""/>
+        <set value=""/>
+    </dataset>
+    <dataset parentyaxis="S" seriesname="同比" renderas="Line">
+        <set value=""/>
+        <set value="3.35"/>
+        <set value="1.59"/>
+        <set value="2.21"/>
+        <set value="3.46"/>
+        <set value="3.47"/>
+        <set value="3.22"/>
+        <set value="3.24"/>
+        <set value=""/>
+        <set value=""/>
+        <set value=""/>
+        <set value=""/>
+        <set value=""/>
+    </dataset>
+</chart>

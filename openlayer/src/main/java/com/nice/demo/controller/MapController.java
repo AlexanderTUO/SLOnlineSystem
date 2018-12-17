@@ -59,5 +59,10 @@ public class MapController {
         return "dataTable";
     }
 
+    @RequestMapping("fc")
+    public String fc() {
+        return "fusionCharts";
+    }
+
 
 }

@@ -38,8 +38,9 @@ public class WaterController {
 
     @RequestMapping("getWaterBySite")
     @ResponseBody
-    public WaterEntity getWaterBySite(String site) {
-        return waterService.getWaterBySite(site);
+    public List<WaterEntity> getWaterBySite(@RequestParam("type")String type,@RequestParam("site")String site) {
+        List<WaterEntity> waterEntities = waterService.getWaterBySite(type,site);
+        return waterEntities;
     }
 
 }

@@ -22,6 +22,6 @@ public class WaterEntity {
     private String address;
     private double waterPos;
     private double normalNum;
-    private Timestamp time;
+    private Timestamp wateTime;
 
 }

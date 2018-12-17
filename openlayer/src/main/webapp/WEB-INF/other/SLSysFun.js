@@ -678,12 +678,12 @@ function showDetailsInfo(tmark) {
     popupContent.html(html); //设置Popup容器里的内容
     //创建渲染统计图
     var chartID = tmark.get('fid');
-    var ChartObj = new FusionCharts("Libs/FusionCharts/Column3D.swf", chartID, "300", "200");
+    var ChartObj = new FusionCharts("lib/fusionCharts/Column3D.swf", chartID, "300", "200");
     ChartObj.setTransparent(true);
     ChartObj.setXMLData(dataXml);
     ChartObj.render("ChartRltdiv");
     //设置Popup的位置，冒泡打开Popup标注
-    popup.setPosition(coordinate); 
+    popup.setPosition(coordinate);
 }
 
 /*

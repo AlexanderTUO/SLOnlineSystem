@@ -25,8 +25,14 @@ public class WaterServiceImpl implements WaterService {
     }
 
     @Override
-    public WaterEntity getWaterBySite(String site) {
-        return waterMapper.getWaterBySite(site);
+    public List<WaterEntity> getWaterBySite(String type, String site) {
+        if ("river".equals(type)) {
+            type = "RR";
+        }
+        if ("reservoir".equals(type)) {
+            type = "ZZ";
+        }
+        return waterMapper.getWaterBySite(type,site);
     }
 
     @Override

@@ -333,7 +333,7 @@ $(function () {
                     name:waterInfo[index].riverName,
                     type: "river",
                     imgURL:imgURL,
-                    info: waterInfo[index],
+                    info: waterInfo[index].stationCode,
                     fid: "river" + index.toString()
                 })
                 riverFeature.setStyle(new ol.style.Style({
@@ -365,7 +365,7 @@ $(function () {
                     name:waterInfo[index].riverName,
                     type: "reservoir",
                     imgURL:imgURL,
-                    info: waterInfo[index],
+                    info: waterInfo[index].stationCode,
                     fid: "reservoir" + index.toString()
                 })
                 reservoirFeature.setStyle(new ol.style.Style({
@@ -449,10 +449,24 @@ $(function () {
     })
 
     // 添加pop到map
+    var popElement = document.getElementById('popup');
+    var popContent = $("#popup-content");
+    var popCloser = $("#popup-closer");
     var pop = new ol.Overlay({
-        element: document.getElementById("pop")
-    })
+        element: popElement,
+        positioning: "bottom-center",
+        stopEvent: false,
+        autoPanAnimation:{
+            during: 250
+        }
+    });
     map.addOverlay(pop);
+
+    popCloser.on("click",function () {
+        pop.setPosition(undefined);
+        popCloser.blur();
+        return false;
+    })
 
     map.on("singleclick",function (e) {
         var pixel = map.getEventPixel(e.originalEvent);
@@ -463,7 +477,78 @@ $(function () {
             return feature;
         })
 
-
+        if (feature) {
+            popContent.html("");
+            showWaterDetail(feature);
+            // var element = pop.getElement();
+            // var coordinate = e.coordinate;
+            //
+            // $(element).popover("destroy");
+            // pop.setPosition(coordinate);
+            //
+            // $(element).popover({
+            //     placement: "top",
+            //     animate: false,
+            //     html: true,
+            // })
+            //
+            // $(element).popover("show");
+        }
     })
+
+    function showWaterDetail(feature) {
+
+        var stationCode = feature.get("info");
+        var type = feature.get("type");
+        $.ajax({
+            url: "/water/getWaterBySite?type="+type+"&site="+stationCode,
+            type: "get",
+            success:function (data) {
+                alert(232)
+                var dataSource = {
+                    "chart": {
+                        "caption": "南宁市水情表",
+                        "subcaption": "",
+                        "showhovereffect": "1",
+                        // "numbersuffix": "%",
+                        "rotatelabels": "1",
+                        "theme": "fusion"
+                    },
+                    "categories": [
+                        {
+                            "category": [
+                                {
+                                    "label": "Australia"
+                                },
+                                {
+                                    "label": "New-Zealand"
+                                },
+                                {
+                                    "label": "India"
+                                },
+                            ]
+                        }
+                    ],
+                    "dataset": [
+                        {
+                            "seriesname": "2016 Actual Salary Increase",
+                            // "plottooltext": "Salaries increased by <b>$dataValue</b> in 2016",
+                            "data": [
+                                {
+                                    "value": "3"
+                                },
+                                {
+                                    "value": "3"
+                                },
+                                {
+                                    "value": "10"
+                                },
+                            ]
+                        },
+                    ]
+                };
+            }
+        })
+    }
 
 })
