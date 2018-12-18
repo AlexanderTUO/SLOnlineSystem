@@ -23,7 +23,8 @@
     <%--<script src="Libs/ol/source/GoogleMapSource.js" type="text/javascript"></script>--%>
     <%--<script src="Libs/ol/layer/GoogleMapLayer.js" type="text/javascript"></script>--%>
     <!-- 第三方插件库 统计图插件 -->
-    <script src="lib/fusioncharts.js" type="text/javascript"></script>
+    <script src="lib/fusioncharts/fusioncharts.js" type="text/javascript"></script>
+    <script src="lib/fusioncharts/fusioncharts.charts.js" type="text/javascript"></script>
     <!-- 第三方插件库 -->
     <script src="lib/jquery-ui-1.12.1/jquery-ui.js" type="text/javascript"></script>
     <%--<script src="Libs/jquery.ui.datepicker-zh-CN.js" type="text/javascript"></script>--%>

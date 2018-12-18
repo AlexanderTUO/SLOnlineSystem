@@ -16,6 +16,7 @@
         `waterinfo_view`.`wateTime`
         FROM `waterinfo_view`
         <include refid="condition"></include>
+        order by 'waterTime' desc
     </select>
 
     <select id="getWaterRows" resultType="Integer">
@@ -26,7 +27,7 @@
     <sql id="condition">
         <where>
             <if test="type!=null and type!=''">
-                and category = #{type,jdbcType=VARCHAR}
+                and category = #{type}
             </if>
         </where>
     </sql>

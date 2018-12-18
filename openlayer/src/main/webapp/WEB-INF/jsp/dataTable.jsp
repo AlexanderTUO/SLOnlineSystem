@@ -66,25 +66,25 @@
                },
                // {
                //     targets: 2,
-               //     data: "stationCode",
+               //     date: "stationCode",
                //     title: "最后更新时间",
-               //     render: function (data, type, row, meta) {
-               //         return new Date(Date.parse(data)).Format("yyyy-MM-dd hh:mm:ss");
+               //     render: function (date, type, row, meta) {
+               //         return new Date(Date.parse(date)).Format("yyyy-MM-dd hh:mm:ss");
                //     }
                // },
                // {
                //     targets: 1,
-               //     data: null,
+               //     date: null,
                //     title: "发表人",
-               //     render: function (data, type, row, meta) {
+               //     render: function (date, type, row, meta) {
                //         return "<a href='" + row.user.html_url + "' target='_blank'>" + row.user.login + "</a>"
                //     }
                // },
                // {
                //     targets: 0,
-               //     data: "title",
+               //     date: "title",
                //     title: "问题",
-               //     render: function (data, type, row, meta) {
+               //     render: function (date, type, row, meta) {
                //         var labels = "";
                //         if (row.labels.length) {
                //             labels += "【";
@@ -111,6 +111,11 @@
                    "class='btn btn-primary btn-sm'>我也要提问</a>");
            }
        });
+
+       $('#issueTable tbody').on('click', 'tr', function () {
+           var data = issueTable.row( this ).data();
+           alert( 'You clicked on '+data[0]+'\'s row' );
+       } );
 
        Date.prototype.Format = function (fmt) { //author: meizz
            var o = {

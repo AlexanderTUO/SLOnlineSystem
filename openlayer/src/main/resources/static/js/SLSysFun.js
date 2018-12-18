@@ -127,54 +127,25 @@ $(function () {
 
     var type;
 
-    function waterChoose() {
-        reservoirInfo = $("#RverInfo").prop('checked');
-        riverInfo = $("#riverInfo").prop('checked');
-
-        if (riverInfo) {//河流选中
-            type = "rr";
-            $.ajax({
-                url: "/water/getWaterInfo",
-                type: "post",
-                data: {
-                    type: "rr",
-                },
-                success: function (data) {
-                    addMarkers(data);
-                }
-            })
-        }else{
-            type = "wu";
-            addMarkers(null);
-        }
-
-        if (reservoirInfo) {//水库选中
-            type = "zz";
-            $.ajax({
-                url: "/water/getWaterInfo",
-                type: "post",
-                data: {
-                    type: "zz",
-                },
-                success: function (data) {
-                    addMarkers(data);
-                }
-            });
-        } else {
-            type = "wu";
-        }
-
-    }
-
 
     var isRiver = true;
     var isReser = false;
 
-    var riverArray;
-    var rverArray;
+    var riverArray=null;
+    var rverArray=null;
 
     var riverTable;
     var rverTable;
+
+    /**
+     * 地图移动到要素
+     * @param feature 坐标
+     */
+    function moveTo(feature) {
+        var geo = feature.getGeometry();
+        var coordinate = geo.getCoordinates();
+        map.getView().setCenter(coordinate);
+    }
 // 绑定实时水情切换按钮
     $("#sssq").change(function () {
         var sssq = $("#sssq").prop('checked');
@@ -244,6 +215,21 @@ $(function () {
             } else {
                 rverTable.ajax.reload();
             }
+
+            $('#reservoir tbody').on('click', 'tr', function () {
+                var data = rverTable.row(this).data();
+                var index = this.rowIndex;
+
+                var lon = data.longitude;
+                var lat = data.latitude;
+                // var point = new ol.geom.Point([parseFloat(lon), parseFloat(lat)]);
+
+                var coordinate = [parseFloat(lon), parseFloat(lat)];
+                moveTo(rverArray[index-1]);
+                showWaterDetail(rverArray[index-1]);
+                // var data = rverTable.row( this ).data();
+                // alert( 'You clicked on '+data[0]+'\'s row' );
+            } );
 
         };
         if (type == "river" && isRiver) {
@@ -330,7 +316,7 @@ $(function () {
                 }
                 riverFeature = new ol.Feature({
                     geometry: point,
-                    name:waterInfo[index].riverName,
+                    name:waterInfo[index].address,
                     type: "river",
                     imgURL:imgURL,
                     info: waterInfo[index].stationCode,
@@ -350,7 +336,7 @@ $(function () {
 
         }
 
-        if (reservoirInfo) {
+        if (isReser&&reservoirInfo) {
             for (var index = 0; index < waterInfo.length; index++) {
                 var lon = waterInfo[index].longitude;
                 var lat = waterInfo[index].latitude;
@@ -362,7 +348,7 @@ $(function () {
                 }
                 reservoirFeature = new ol.Feature({
                     geometry: point,
-                    name:waterInfo[index].riverName,
+                    name:waterInfo[index].address,
                     type: "reservoir",
                     imgURL:imgURL,
                     info: waterInfo[index].stationCode,
@@ -389,56 +375,70 @@ $(function () {
 
     // 清空标注
     function clearMarkers(type) {
-        if (type == 'river' && riverArray != null) {
-            for (var index = 0; index < riverArray.length; index++) {
-                ssslSource.removeFeature(riverArray[index]);
+        if (ssslLayer != null){
+            if (type == 'river' && riverArray != null) {
+                for (var index = 0; index < riverArray.length; index++) {
+                    ssslLayer.getSource().removeFeature(riverArray[index]);
+                }
+                riverArray = null;
+                // ssslLayer.setSource(ssslSource);
             }
-            riverArray = null;
-            // ssslLayer.setSource(ssslSource);
-        }
-        if (type == 'reservoir' && rverArray != null) {
-            for (var index = 0; index < rverArray.length; index++) {
-                ssslSource.removeFeature(rverArray[index]);
+            if (type == 'reservoir' && rverArray != null) {
+                for (var index = 0; index < rverArray.length; index++) {
+                    ssslLayer.getSource().removeFeature(rverArray[index]);
+                }
+                rverArray = null;
+                // ssslLayer.setSource(ssslSource);
             }
-            rverArray = null;
-            // ssslLayer.setSource(ssslSource);
         }
     }
 
     // 显示水情信息
-    function showWaterInfo() {
+    function showWaterInfo(type) {
         reservoirInfo = $("#RverInfo").prop('checked');
         riverInfo = $("#riverInfo").prop('checked');
-        if (riverInfo) {
-            isRiver = true;
-            queryWaterInfo("river");
-            $("#hlxxTab").show();
-        } else {
-            $("#hlxxTab").hide();
-            clearMarkers("river");
-            isRiver = false;
+
+        switch (type) {
+            case "river":
+                if (riverInfo) {
+                    isRiver = true;
+                    queryWaterInfo("river");
+                    $("#hlxxTab").show();
+                } else {
+                    $("#hlxxTab").hide();
+                    clearMarkers("river");
+                    isRiver = false;
+                }
+                break;
+            case "reservoir":
+                if (reservoirInfo) {
+                    isReser = true;
+                    queryWaterInfo("reservoir");
+                    $("#skxxTab").show();
+                } else {
+                    $("#skxxTab").hide();
+                    clearMarkers("reservoir");
+                    isRiver = false;
+                }
+                break;
+            default:
+
         }
 
-        if (reservoirInfo) {
-            isReser = true;
-            queryWaterInfo("reservoir");
-            $("#skxxTab").show();
-        } else {
-            $("#skxxTab").hide();
-            clearMarkers("reservoir");
-            isRiver = false;
-        }
+
+
+
     }
 
     // 绑定水库复选框
     $("#RverInfo").change(function () {
-        showWaterInfo();
+        showWaterInfo("reservoir");
 
     })
 
     // 绑定河流复选框
     $("#riverInfo").change(function () {
-        showWaterInfo();
+        showWaterInfo("river");
     })
 
     // 鼠标选中标注时变成小手
@@ -498,57 +498,69 @@ $(function () {
 
     function showWaterDetail(feature) {
 
-        var stationCode = feature.get("info");
         var type = feature.get("type");
+        var stationCode = feature.get("info");
         $.ajax({
             url: "/water/getWaterBySite?type="+type+"&site="+stationCode,
             type: "get",
             success:function (data) {
-                alert(232)
-                var dataSource = {
-                    "chart": {
-                        "caption": "南宁市水情表",
-                        "subcaption": "",
-                        "showhovereffect": "1",
-                        // "numbersuffix": "%",
-                        "rotatelabels": "1",
-                        "theme": "fusion"
-                    },
-                    "categories": [
-                        {
-                            "category": [
-                                {
-                                    "label": "Australia"
-                                },
-                                {
-                                    "label": "New-Zealand"
-                                },
-                                {
-                                    "label": "India"
-                                },
-                            ]
-                        }
-                    ],
-                    "dataset": [
-                        {
-                            "seriesname": "2016 Actual Salary Increase",
-                            // "plottooltext": "Salaries increased by <b>$dataValue</b> in 2016",
-                            "data": [
-                                {
-                                    "value": "3"
-                                },
-                                {
-                                    "value": "3"
-                                },
-                                {
-                                    "value": "10"
-                                },
-                            ]
-                        },
-                    ]
-                };
+
+                if ($("#ChartRltdiv").length > 0) {
+                    $("#ChartRltdiv").remove();
+                }
+
+                var html = '<div id="ChartRltdiv" style="width:300px;height:200px;"></div></br>'
+                    + '<div style="font-size: 13px;line-height: 20px;">最新水位：' + data[0].value + '</br>时间：' + data[0].label + '</br>站址：' + feature.get("name") + '</div>';
+                popContent.html(html);
+                // FusionCharts表格
+                var chart = new FusionCharts({
+                    type: "Column3D",
+                    renderAt: "ChartRltdiv",
+                    width: "300",
+                    height: "200"
+                }).render();
+
+                var showDataMap = {'data': data};
+                chart.setJSONData(showDataMap);
+
+                var coordinate = feature.getGeometry().getCoordinates();
+                pop.setPosition(coordinate);
+
             }
         })
+    }
+
+    // 表格的行点击事件
+    // $("#river tbody  tr").on("click",function () {
+    //     alert(433)
+    //     // var data = riverTable.row(this).data();
+    //     // alert(data[0]);
+    // })
+
+    $('#river tbody').on('click', 'tr', function () {
+        alert(3243);
+        // var data = table.row( this ).data();
+        // alert( 'You clicked on '+data[0]+'\'s row' );
+    } );
+
+    /*
+    *	时间格式化
+    */
+    Date.prototype.format = function (format) {
+        var o = {
+            "M+": this.getMonth() + 1, //month
+            "d+": this.getDate(), //day
+            "h+": this.getHours(), //hour
+            "m+": this.getMinutes(), //minute
+            "s+": this.getSeconds(), //second
+            "q+": Math.floor((this.getMonth() + 3) / 3), //quarter
+            "S": this.getMilliseconds() //millisecond
+        }
+        if (/(y+)/.test(format)) format = format.replace(RegExp.$1,
+            (this.getFullYear() + "").substr(4 - RegExp.$1.length));
+        for (var k in o) if (new RegExp("(" + k + ")").test(format))
+            format = format.replace(RegExp.$1,RegExp.$1.length == 1 ? o[k] : ("00" + o[k]).substr(("" + o[k]).length));
+        return format;
     }
 
 })
