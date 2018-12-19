@@ -17,6 +17,7 @@
         FROM `waterinfo_view`
         <include refid="condition"></include>
         order by 'waterTime' desc
+        <include refid="paging"></include>
     </select>
 
     <select id="getWaterRows" resultType="Integer">
@@ -30,6 +31,15 @@
                 and category = #{type}
             </if>
         </where>
+    </sql>
+
+    <sql id="paging">
+        <if test="length!=null">
+           limit #{length}
+        </if>
+        <if test="start!=null">
+           offset #{start}
+        </if>
     </sql>
 
     <select id="getWaterBySite" resultType="com.nice.demo.entity.WaterEntity">

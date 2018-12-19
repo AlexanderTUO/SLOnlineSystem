@@ -23,3 +23,11 @@ devtools:
     port:35729
   restart:
     enabled:true
+
+logging:
+  level:
+    com.nice.demo.mapper: DEBUG
+
+
+
+

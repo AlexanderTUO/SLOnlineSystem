@@ -1,5 +1,7 @@
 package com.nice.demo.service;
 
+import com.nice.demo.bean.WaterQueryBean;
+import com.nice.demo.entity.PagingResult;
 import com.nice.demo.entity.WaterEntity;
 
 import java.util.List;
@@ -11,11 +13,11 @@ import java.util.List;
  */
 public interface WaterService {
     /**
-     * 根据水情类型查询水信息
-     * @param type
+     * 根据水情类型分页查询水信息
+     * @param water
      * @return
      */
-    List<WaterEntity> getWaterInfo(String type);
+    PagingResult<WaterEntity> getWaterInfo(WaterQueryBean water);
 
     /**
      * 根据站点查询水情信息
@@ -25,10 +27,4 @@ public interface WaterService {
      */
     List<WaterEntity> getWaterBySite(String type,String site);
 
-    /**
-     * 根据水情类型查询水情信息行数
-     * @param type 水情类型
-     * @return
-     */
-    Integer getWaterRows(String type);
 }

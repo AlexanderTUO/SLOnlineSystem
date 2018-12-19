@@ -1,5 +1,7 @@
 package com.nice.demo.service.impl;
 
+import com.nice.demo.bean.WaterQueryBean;
+import com.nice.demo.entity.PagingResult;
 import com.nice.demo.entity.WaterEntity;
 import com.nice.demo.mapper.WaterMapper;
 import com.nice.demo.service.WaterService;
@@ -20,8 +22,15 @@ public class WaterServiceImpl implements WaterService {
     public WaterMapper waterMapper;
 
     @Override
-    public List<WaterEntity> getWaterInfo(String type) {
-        return waterMapper.getWaterInfo(type);
+    public PagingResult<WaterEntity> getWaterInfo(WaterQueryBean water) {
+
+        List<WaterEntity> list = waterMapper.getWaterInfo(water);
+        Integer rows = waterMapper.getWaterRows(water);
+        PagingResult<WaterEntity> pagingResult = new PagingResult<>();
+        pagingResult.setData(list);
+        pagingResult.setRecordsTotal(rows);
+        pagingResult.setDraw(water.getDraw());
+        return pagingResult;
     }
 
     @Override
@@ -35,8 +44,4 @@ public class WaterServiceImpl implements WaterService {
         return waterMapper.getWaterBySite(type,site);
     }
 
-    @Override
-    public Integer getWaterRows(String type) {
-        return waterMapper.getWaterRows(type);
-    }
 }

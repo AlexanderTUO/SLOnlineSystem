@@ -1,10 +1,12 @@
 package com.nice.demo.controller;
 
-import com.nice.demo.bean.PageBean;
+import com.nice.demo.bean.WaterQueryBean;
+import com.nice.demo.entity.PagingResult;
 import com.nice.demo.entity.WaterEntity;
 import com.nice.demo.service.WaterService;
 import com.nice.demo.util.DateUtils;
-import org.apache.jasper.tagplugins.jstl.core.ForEach;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -12,7 +14,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.sql.Timestamp;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -30,17 +31,14 @@ public class WaterController {
     @Autowired
     public WaterService waterService;
 
+    private Logger logger = LoggerFactory.getLogger(this.getClass());
+
     @RequestMapping("getWaterInfo")
     @ResponseBody
-    public Object getWaterInfo(@RequestParam("type") String type) {
-        Integer rows = waterService.getWaterRows(type);
-        List<WaterEntity> waterEntities = waterService.getWaterInfo(type);
-
-        PageBean pageBean = new PageBean();
-        pageBean.setRecordsTotal(rows);
-        pageBean.setData(waterEntities);
-        pageBean.setDraw(10);
-        return waterEntities;
+    public Object getWaterInfo(WaterQueryBean water) {
+        logger.info("hello log");
+        PagingResult<WaterEntity> pagingResult = waterService.getWaterInfo(water);
+        return pagingResult;
     }
 
     @RequestMapping("getWaterBySite")

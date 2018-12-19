@@ -1,5 +1,7 @@
 package com.nice.demo.mapper;
 
+import com.nice.demo.bean.WaterQueryBean;
+import com.nice.demo.entity.PagingResult;
 import com.nice.demo.entity.WaterEntity;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -15,10 +17,10 @@ import java.util.List;
 public interface WaterMapper {
     /**
      * 根据水情类型查询水信息
-     * @param type
+     * @param water
      * @return
      */
-    List<WaterEntity> getWaterInfo(@Param("type") String type);
+    List<WaterEntity> getWaterInfo(WaterQueryBean water);
 
     /**
      * 根据站点查询水情信息
@@ -30,8 +32,8 @@ public interface WaterMapper {
 
     /**
      * 根据水情类型查询水情信息行数
-     * @param type 水情类型
+     * @param water 水情类型
      * @return
      */
-    Integer getWaterRows(@Param("type") String type);
+    Integer getWaterRows(WaterQueryBean water);
 }

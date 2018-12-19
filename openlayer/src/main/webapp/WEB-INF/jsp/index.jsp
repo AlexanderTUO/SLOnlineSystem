@@ -102,6 +102,7 @@
                         <td></td>
                         <td></td>
                         <td></td>
+                        <td></td>
                     </thead>
                 </table>
             </div>
@@ -113,6 +114,7 @@
             <div class="hlxxContent" id="hlxxTab">
                 <table id="river">
                     <thead>
+                        <td></td>
                         <td></td>
                         <td></td>
                         <td></td>

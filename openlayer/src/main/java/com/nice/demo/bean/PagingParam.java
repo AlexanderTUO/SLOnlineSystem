@@ -2,7 +2,7 @@ package com.nice.demo.bean;
 
 import lombok.Data;
 
-import java.util.List;
+import java.io.Serializable;
 
 /**
  * @Author: tyk
@@ -10,9 +10,8 @@ import java.util.List;
  * @Description:
  */
 @Data
-public class PageBean {
+public class PagingParam implements Serializable {
     private Integer draw;
-    private Integer recordsTotal;
-    private Integer recordsFiltered ;
-    private List data;
+    private Integer start;
+    private Integer length ;
 }
