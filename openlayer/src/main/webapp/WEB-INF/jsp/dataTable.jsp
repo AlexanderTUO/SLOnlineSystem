@@ -12,10 +12,19 @@
 
 
     <link href="lib/datatable/jquery.dataTables.css" rel="stylesheet" type="text/css">
+    <link href="lib/bootstrap-datepicker/css/bootstrap-datepicker.css" rel="stylesheet" type="text/css">
 
     <!-- jQuery库 -->
     <script src="lib/jquery-3.3.1.min.js" type="text/javascript"></script>
     <script type="text/javascript" src="lib/datatable/jquery.dataTables.js"></script>
+
+
+
+    <%--bootstrap库--%>
+    <script src="lib/bootstrap-3.3.7-dist/js/bootstrap.js" type="text/javascript"></script>
+
+    <script src="lib/bootstrap-datepicker/js/bootstrap-datepicker.js" type="text/javascript"></script>
+
 
 </head>
 <script type="text/javascript">
@@ -32,14 +41,18 @@
 
        //DataTables初始化
        var issueTable = $("#issueTable").DataTable({
+           serverSide: true,
            ajax: {
                url: "/water/getWaterInfo",
-               // url: "https://api.github.com/repos/ssy341/datatables-cn/issues",
                type: "post",
-               data: {
-                   type: "zz"
+               data:function(d){
+                   var type = "rr";
+                   d.type = type;
+                   return JSON.stringify(d);
                },
-               dataSrc: ""
+               // dataSrc: ""
+               dataType: "json",
+               contentType: "application/json",
            },
            //默认最后一列（最后更新时间）降序排列
            // order: [[ 2, "desc" ]],
@@ -64,47 +77,6 @@
                    data: "category",
                    title: "分类",
                },
-               // {
-               //     targets: 2,
-               //     date: "stationCode",
-               //     title: "最后更新时间",
-               //     render: function (date, type, row, meta) {
-               //         return new Date(Date.parse(date)).Format("yyyy-MM-dd hh:mm:ss");
-               //     }
-               // },
-               // {
-               //     targets: 1,
-               //     date: null,
-               //     title: "发表人",
-               //     render: function (date, type, row, meta) {
-               //         return "<a href='" + row.user.html_url + "' target='_blank'>" + row.user.login + "</a>"
-               //     }
-               // },
-               // {
-               //     targets: 0,
-               //     date: "title",
-               //     title: "问题",
-               //     render: function (date, type, row, meta) {
-               //         var labels = "";
-               //         if (row.labels.length) {
-               //             labels += "【";
-               //             for (var j = 0, labelslen = row.labels.length; j < labelslen; j++) {
-               //                 labels += "<span style='color:#" + row.labels[j].color + "' >" +
-               //                     row.labels[j].name + "</span>";
-               //                 if (j != labelslen - 1) {
-               //                     labels += ",";
-               //                 }
-               //             }
-               //             labels += "】";
-               //         }
-               //         var hot = "";
-               //         if(labels.indexOf("置顶")>0){
-               //             hot = "<span class='hot'></span>"
-               //         }
-               //         return "<a href='" + row.html_url + "' target='_blank'>" + row.title + "</a>" + labels +
-               //             "<i class='icon Hui-iconfont'>&#xe622;</i>"+row.comments +hot;
-               //     }
-               // }
            ],
            initComplete: function () {
                $("#toolbar").append("<a href='https://github.com/ssy341/datatables-cn/issues/new' " +
@@ -116,6 +88,17 @@
            var data = issueTable.row( this ).data();
            alert( 'You clicked on '+data[0]+'\'s row' );
        } );
+
+
+       $('.form-control').datepicker({
+           format: "yyyy-mm-dd",
+           startDate: '-3d'
+       });
+
+       $( "#datepicker" ).datepicker({
+           format: "yyyy-mm-dd",
+           startDate: '-3d'
+       });
 
        Date.prototype.Format = function (fmt) { //author: meizz
            var o = {
@@ -157,6 +140,12 @@
             </thead>
         </table>
     </div>
-
+    <div class="input-group date" data-provide="datepicker">
+        <input type="text" class="form-control">
+        <div class="input-group-addon">
+            <span class="glyphicon glyphicon-th"></span>
+        </div>
+    </div>
+    <p>Date: <input type="text" id="datepicker"></p>
 </body>
 </html>

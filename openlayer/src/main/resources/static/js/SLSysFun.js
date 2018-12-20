@@ -151,7 +151,11 @@ $(function () {
             zoom: 8
         })
     }
-// 绑定实时水情切换按钮
+    /*********************************实时水情START********************************************/
+
+    /**
+     * 绑定实时水情切换按钮
+     */
     $("#sssq").change(function () {
         var sssq = $("#sssq").prop('checked');
 
@@ -167,6 +171,7 @@ $(function () {
             queryWaterInfo("river");
 
         } else {//不选中实时水情
+            clearMarkers("river");
             $("#RverInfo").attr('checked',false);
             $("#river").attr('checked',true);
             $(".sqDiv").hide();
@@ -177,19 +182,32 @@ $(function () {
     function queryWaterInfo(type) {
         if (type == "reservoir" && isReser) {
             $.ajax({
-                url: "/water/getWaterInfo?type=zz",
-                type: "get",
-                success: function (waterInfo) {
-                    addMarkers(waterInfo);
+                url: "/water/getWaterInfo",
+                type: "post",
+                data: JSON.stringify({
+                    type: "zz"
+                }),
+                dataType: "json",
+                contentType: "application/json",
+                success: function (pagingResult) {
+                    addMarkers(pagingResult.data);
                     // addToTable(type);
                 }
             });
             if (rverTable == null) {
                 rverTable = $("#reservoir").DataTable({
+                    serverSide: true,
                     ajax: {
-                        url: "/water/getWaterInfo?type=zz",
-                        type: "get",
-                        dataSrc: ""
+                        url: "/water/getWaterInfo",
+                        type: "post",
+                        data: function (d) {
+                            var type = "zz";
+                            d.type = type;
+                            return JSON.stringify(d);
+                        },
+                        // dataSrc: ""
+                        dataType: "json",
+                        contentType: "application/json",
                     },
                     //默认最后一列（最后更新时间）降序排列
                     // order: [[ 2, "desc" ]],
@@ -230,45 +248,68 @@ $(function () {
              * 行点击事件
              */
             $('#reservoir tbody').on('click', 'tr', function () {
+
                 var data = rverTable.row(this).data();
-                var index = this.rowIndex;
+                var type = "zz";
+                var stationCode = data.stationCode;
+                $.ajax({
+                    url: "/water/getWaterBySite?type=" + type + "&site=" + stationCode,
+                    type: "get",
+                    success: function (waterInfo) {
+                        if (waterInfo) {
+                            var lon = waterInfo[0].longitude;
+                            var lat = waterInfo[0].latitude;
+                            var coordinate = [parseFloat(lon), parseFloat(lat)];
 
-                var lon = data.longitude;
-                var lat = data.latitude;
-                // var point = new ol.geom.Point([parseFloat(lon), parseFloat(lat)]);
+                            var point = new ol.geom.Point(coordinate);
 
-                var coordinate = [parseFloat(lon), parseFloat(lat)];
-                moveTo(rverArray[index-1]);
-                showWaterDetail(rverArray[index-1]);
-                // var data = rverTable.row( this ).data();
-                // alert( 'You clicked on '+data[0]+'\'s row' );
-            } );
+                            var feature = new ol.Feature({
+                                geometry: point,
+                                name: waterInfo[0].address,
+                                type: "reservoir",
+                                info: waterInfo[0].stationCode,
+                            })
+                            moveTo(feature);
+                            showWaterDetail(feature);
+                        }
+                    }
+                })
 
-        };
+
+            })
+        }
         if (type == "river" && isRiver) {
-            // $.ajax({
-            //     url: "/water/getWaterInfo?type=rr",
-            //     type: "get",
-            //     success: function (waterInfo) {
-            //         addMarkers(waterInfo);
-            //         // addToTable(type);
-            //     }
-            // });
+            $.ajax({
+                url: "/water/getWaterInfo",
+                type: "post",
+                data: JSON.stringify({
+                    type: "rr"
+                }),
+                dataType: "json",
+                contentType: "application/json",
+                success: function (pagingResult) {
+                    addMarkers(pagingResult.data);
+                    // addToTable(type);
+                }
+            });
             if (riverTable == null) {
                 riverTable = $("#river").DataTable({
                     serverSide: true,
                     ajax: {
                         url: "/water/getWaterInfo",
-                        type: "get",
+                        type: "post",
                         data:function(d){
                             var type = "rr";
                             d.type = type;
+                            return JSON.stringify(d);
                         },
                         // dataSrc: ""
+                        dataType: "json",
+                        contentType: "application/json",
                     },
                     //默认最后一列（最后更新时间）降序排列
                     // order: [[ 2, "desc" ]],
-                    columnDefs: [
+                    columns: [
                         {
                             targets: 0,
                             data: "stationCode",
@@ -294,8 +335,12 @@ $(function () {
                             data: "address",
                             title: "站址",
                         },
+                        // {
+                        //     targets: 5,
+                        //     data: null,
+                        //     title: "行号",
+                        // },
                     ]
-
                 });
             } else {
                 riverTable.ajax.reload();
@@ -305,19 +350,51 @@ $(function () {
              * 行点击事件
              */
             $('#river tbody').on('click', 'tr', function () {
+
                 var data = riverTable.row(this).data();
-                var index = this.rowIndex;
+                var type = "rr";
+                var stationCode = data.stationCode;
+                $.ajax({
+                    url: "/water/getWaterBySite?type=" + type + "&site=" + stationCode,
+                    type: "get",
+                    success:function (waterInfo) {
+                        if (waterInfo) {
+                            var lon = waterInfo[0].longitude;
+                            var lat = waterInfo[0].latitude;
+                            var coordinate = [parseFloat(lon), parseFloat(lat)];
 
-                var lon = data.longitude;
-                var lat = data.latitude;
-                // var point = new ol.geom.Point([parseFloat(lon), parseFloat(lat)]);
+                            var point = new ol.geom.Point(coordinate);
 
-                var coordinate = [parseFloat(lon), parseFloat(lat)];
-                moveTo(riverArray[index-1]);
-                showWaterDetail(riverArray[index-1]);
-                // var data = rverTable.row( this ).data();
-                // alert( 'You clicked on '+data[0]+'\'s row' );
+                            var feature = new ol.Feature({
+                                geometry: point,
+                                name:waterInfo[0].address,
+                                type: "river",
+                                info: waterInfo[0].stationCode,
+                            })
+                            moveTo(feature);
+                            showWaterDetail(feature);
+                        }
+                    }
+                })
+
             } );
+
+            // riverTable.on("draw.dt",function () {
+            //
+            //     // riverTable.Columns.Add("operateStr");
+            //     riverTable.column(5,{
+            //         search: "applied",
+            //         order: "applied"
+            //     }).nodes().each(function (cell,i) {
+            //         i = i + 1;
+            //         var page = riverTable.page.info();
+            //         var pageno = page.page;
+            //         var length = page.length;
+            //
+            //         var columnIndex = i + pageno * length;
+            //         cell.innerHTML = columnIndex;
+            //     })
+            // })
         };
 
 
@@ -413,7 +490,10 @@ $(function () {
         map.addLayer(ssslLayer);
     }
 
-    // 清空标注
+    /**
+     * 清空标注
+     * @param type
+     */
     function clearMarkers(type) {
         if (ssslLayer != null){
             if (type == 'river' && riverArray != null) {
@@ -433,7 +513,10 @@ $(function () {
         }
     }
 
-    // 显示水情信息
+    /**
+     * 显示水情信息
+     * @param type
+     */
     function showWaterInfo(type) {
         reservoirInfo = $("#RverInfo").prop('checked');
         riverInfo = $("#riverInfo").prop('checked');
@@ -481,7 +564,9 @@ $(function () {
         showWaterInfo("river");
     })
 
-    // 鼠标选中标注时变成小手
+    /**
+     * 鼠标选中标注时变成小手
+     */
     map.on("pointermove",function (e) {
         var pixel = map.getEventPixel(e.originalEvent);
         var hit = map.hasFeatureAtPixel(pixel);
@@ -508,6 +593,9 @@ $(function () {
         return false;
     })
 
+    /**
+     * 地图点击事件
+     */
     map.on("singleclick",function (e) {
         var pixel = map.getEventPixel(e.originalEvent);
         var hit = map.hasFeatureAtPixel(pixel);
@@ -536,12 +624,16 @@ $(function () {
         }
     })
 
+    /**
+     * 展示标注点详情
+     * @param feature 矢量
+     */
     function showWaterDetail(feature) {
 
         var type = feature.get("type");
         var stationCode = feature.get("info");
         $.ajax({
-            url: "/water/getWaterBySite?type="+type+"&site="+stationCode,
+            url: "/water/getWaterBySiteCharts?type="+type+"&site="+stationCode,
             type: "get",
             success:function (data) {
 
@@ -570,22 +662,13 @@ $(function () {
         })
     }
 
-    // 表格的行点击事件
-    // $("#river tbody  tr").on("click",function () {
-    //     alert(433)
-    //     // var data = riverTable.row(this).data();
-    //     // alert(data[0]);
-    // })
 
-    $('#river tbody').on('click', 'tr', function () {
-        alert(3243);
-        // var data = table.row( this ).data();
-        // alert( 'You clicked on '+data[0]+'\'s row' );
-    } );
 
-    /*
-    *	时间格式化
-    */
+    /**
+     * 时间格式化
+     * @param format
+     * @returns {*}
+     */
     Date.prototype.format = function (format) {
         var o = {
             "M+": this.getMonth() + 1, //month
@@ -601,6 +684,95 @@ $(function () {
         for (var k in o) if (new RegExp("(" + k + ")").test(format))
             format = format.replace(RegExp.$1,RegExp.$1.length == 1 ? o[k] : ("00" + o[k]).substr(("" + o[k]).length));
         return format;
+    }
+    /*********************************实时水情END********************************************/
+
+    /*********************************实时雨情START********************************************/
+
+    var rainTable = null;
+
+    $("#ssyqfrom1,#ssyqfrom2").datepicker({
+        // format: "yyyy-mm-dd"
+        format: "yyyy-mm-dd hh:ii:ss",
+        autoclose: true,
+    })
+
+    /**
+     * 绑定实时雨情切换按钮事件
+     */
+    $("#ssyq").change(function () {
+        var rainCheck = $("#ssyq").prop;
+        if (rainCheck) {
+            addRainInfoToRainTable();
+            addRainInfoToMaxRainTable();
+            addRainInfoToStaTable();
+            $(".ssyqDiv").show();
+        }else {
+            $(".ssyqDiv").hide();
+        }
+
+    });
+
+    /**
+     * 雨量信息表
+     */
+    function addRainInfoToRainTable() {
+        if (rainTable == null) {
+            rainTable = $("#rainTable").DataTable({
+                serverSide: true,
+                ajax: {
+                    url: "/rain/getRainInfo",
+                    type: "post",
+                    data: function (d) {
+                        var fromTime = $("#ssyqfrom1").val();
+                        var toTime= $("#ssyqfrom2").val();
+                        var rainfall;
+                        d.fromTime = fromTime;
+                        d.toTime = toTime;
+                        d.rainfall = rainfall;
+                        return JSON.stringify(d);
+                    },
+                    // dataSrc: ""
+                    dataType: "json",
+                    contentType: "application/json",
+                },
+                //默认最后一列（最后更新时间）降序排列
+                // order: [[ 2, "desc" ]],
+                columnDefs: [
+                    {
+                        targets: 0,
+                        data: "stationCode",
+                        title: "站码",
+                    },
+                    {
+                        targets: 1,
+                        data: "stationName",
+                        title: "站名",
+                    },
+                    {
+                        targets: 2,
+                        data: "riverName",
+                        title: "雨量",
+                    },
+                    {
+                        targets: 3,
+                        data: "address",
+                        title: "站址",
+                    },
+                ]
+
+            });
+        } else {
+            rverTable.ajax.reload();
+        }
+    }
+
+    function addRainInfoToMaxRainTable() {
+
+    }
+
+    function addRainInfoToStaTable() {
+
     }
 
 })

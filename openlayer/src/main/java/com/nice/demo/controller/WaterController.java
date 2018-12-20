@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -35,7 +36,7 @@ public class WaterController {
 
     @RequestMapping("getWaterInfo")
     @ResponseBody
-    public Object getWaterInfo(WaterQueryBean water) {
+    public PagingResult<WaterEntity> getWaterInfo(@RequestBody WaterQueryBean water) {
         logger.info("hello log");
         PagingResult<WaterEntity> pagingResult = waterService.getWaterInfo(water);
         return pagingResult;
@@ -43,10 +44,16 @@ public class WaterController {
 
     @RequestMapping("getWaterBySite")
     @ResponseBody
-    public List getWaterBySite(@RequestParam("type")String type,@RequestParam("site")String site) {
+    public List<WaterEntity> getWaterBySite(@RequestParam("type")String type,@RequestParam("site")String site) {
+        List<WaterEntity> waterEntities = waterService.getWaterBySite(type,site);
+        return waterEntities;
+    }
+
+    @RequestMapping("getWaterBySiteCharts")
+    @ResponseBody
+    public List<Map<String,Object>> getWaterBySiteCharts(@RequestParam("type")String type,@RequestParam("site")String site) {
         List<WaterEntity> waterEntities = waterService.getWaterBySite(type,site);
         List<Map<String,Object>> maps = new ArrayList<Map<String, Object>>();
-
 
         if (null != waterEntities && waterEntities.size() > 0) {
             for (int index = 0; index < waterEntities.size(); index++) {
@@ -59,7 +66,6 @@ public class WaterController {
                 maps.add(map);
             }
         }
-
         return maps;
     }
 

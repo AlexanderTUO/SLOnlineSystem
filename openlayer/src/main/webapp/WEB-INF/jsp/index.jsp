@@ -13,6 +13,8 @@
     <link href="lib/jquery-ui-1.12.1/jquery-ui.css" rel="stylesheet" type="text/css" />
     <link type="text/css" rel="stylesheet" href="lib/bootstrap-3.3.7-dist/css/bootstrap.css" />
     <link href="css/style.css" rel="stylesheet" type="text/css" />
+    <link href="lib/bootstrap-datepicker/css/bootstrap-datepicker.css" rel="stylesheet" type="text/css">
+
     <!-- jQuery库 -->
     <script src="lib/jquery-3.3.1.min.js" type="text/javascript"></script>
     <!--OL3库-->
@@ -37,6 +39,9 @@
     <%--<script type="text/javascript" src="//cdn.datatables.net/1.10.15/js/jquery.dataTables.min.js"></script>   --%>
     <link href="lib/datatable/jquery.dataTables.css" rel="stylesheet">
     <script type="text/javascript" src="lib/datatable/jquery.dataTables.js"></script>
+    <%--datepicker--%>
+    <script src="lib/bootstrap-datepicker/js/bootstrap-datepicker.js" type="text/javascript"></script>
+
 </head>
 <body>
 <div class="backgroundDiv">
@@ -170,6 +175,16 @@
             <div class="yqHeader">
                 雨量信息(单位：mm)</div>
             <div class="ylxxContent" id="ylxxTab" style="display: block">
+                <table id="rainTable">
+                    <thead>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </thead>
+                </table>
             </div>
         </div>
         <div id="gszdyl">
