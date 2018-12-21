@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.nice.demo.mapper.RainMapper">
+    <!--查询条件-->
+    <sql id="condition">
+        <where>
+            <if test="fromTime!=null and toTime!=null">
+                rainTime between #{fromTime} and #{toTime}
+            </if>
+            <if test="minRain!=null and maxRain!=null">
+                and rainfall between #{minRain} and #{maxRain}
+            </if>
+        </where>
+    </sql>
+    <!--分页条件-->
+    <sql id="paging">
+        <if test="length!=null">
+            limit #{length}
+        </if>
+        <if test="start!=null">
+            offset #{start}
+        </if>
+    </sql>
+    <!--查询雨情信息-->
+    <select id="getRainInfo" resultType="com.nice.demo.entity.RainEntity">
+    SELECT `rain`.`stationCode`,
+        `rain`.`time` rainTime,
+        `rain`.`rainfall`,
+        `siteinfo`.`stationName`,
+        `siteinfo`.`longitude`,
+        `siteinfo`.`latitude`,
+        `siteinfo`.`riverName`,
+        `siteinfo`.`category`,
+        `siteinfo`.`city`,
+        `siteinfo`.`suboffice`,
+        `siteinfo`.`address`
+    FROM `rain` inner join `siteinfo`
+    on  `siteinfo`.`stationCode`=`rain`.`stationCode`
+    <include refid="condition"></include>
+    <include refid="paging"></include>
+    </select>
+
+    <!--查询行数-->
+    <select id="getRainRows" resultType="Integer">
+        SELECT count(1)
+        FROM `rain` inner join `siteinfo`
+        on  `siteinfo`.`stationCode`=`rain`.`stationCode`
+        <include refid="condition"></include>
+    </select>
+</mapper>

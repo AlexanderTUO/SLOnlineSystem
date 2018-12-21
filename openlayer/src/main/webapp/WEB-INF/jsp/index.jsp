@@ -140,10 +140,18 @@
         <div class="yqTopTime">
             &nbsp&nbsp 从<input id="ssyqfrom1" name="from" type="text" value="2008-05-16 " />
             <select id="fromTime">
+                <option value="0">0时</option>
+                <option value="6">6时</option>
+                <option value="12"selected="selected">12时</option>
+                <option value="18">18时</option>
             </select><br />
             <br />
             &nbsp&nbsp 到<input id="ssyqfrom2" name="from" type="text" value="2008-05-16 " />
             <select id="toTime">
+                <option value="00">0时</option>
+                <option value="06">6时</option>
+                <option value="12" selected="selected">12时</option>
+                <option value="18">18时</option>
             </select>
         </div>
     </div>
@@ -175,10 +183,8 @@
             <div class="yqHeader">
                 雨量信息(单位：mm)</div>
             <div class="ylxxContent" id="ylxxTab" style="display: block">
-                <table id="rainTable">
+                <table id="rainTable" style="width: 250px;">
                     <thead>
-                        <td></td>
-                        <td></td>
                         <td></td>
                         <td></td>
                         <td></td>

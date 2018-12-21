@@ -693,7 +693,7 @@ $(function () {
 
     $("#ssyqfrom1,#ssyqfrom2").datepicker({
         // format: "yyyy-mm-dd"
-        format: "yyyy-mm-dd hh:ii:ss",
+        format: "yyyy-mm-dd",
         autoclose: true,
     })
 
@@ -701,11 +701,11 @@ $(function () {
      * 绑定实时雨情切换按钮事件
      */
     $("#ssyq").change(function () {
-        var rainCheck = $("#ssyq").prop;
+        var rainCheck = $("#ssyq").prop('checked');;
         if (rainCheck) {
             addRainInfoToRainTable();
-            addRainInfoToMaxRainTable();
-            addRainInfoToStaTable();
+            // addRainInfoToMaxRainTable();
+            // addRainInfoToStaTable();
             $(".ssyqDiv").show();
         }else {
             $(".ssyqDiv").hide();
@@ -713,23 +713,89 @@ $(function () {
 
     });
 
+    $("#fromTime").change(function () {
+        rainTable.ajax.reload();
+    });
+
+    $("#toTime").change(function () {
+        rainTable.ajax.reload();
+    });
+
+    $(".ylxxCheckbox ").change(function () {
+        // var check = $(this).prop;
+        // if (check) {
+        //     $(this).attr("checked",false)
+        // }else {
+        //     $(this).attr("checked",true)
+        // }
+        // var data = rainTable.ajax.params();
+        rainTable.draw(false);
+    });
+
+    /**
+     * 获取雨量范围信息
+     * @returns {*}
+     */
+    function getRainfall() {
+        var rainfall = new Array();
+        var min = -1;
+        var max = -1;
+        var result = new Array();
+
+        $(".ylxxCheckbox").each(function () {
+            if ($(this).prop('checked')) {
+                rainfall.push($(this).val());
+            }
+        })
+        // rainfall = rainfall.sort();
+        var length = rainfall.length;
+        if (length >=1) {
+            min = rainfall[0];
+            max = rainfall[length - 1];
+        }
+        result.push(min);
+        result.push(max);
+        return result;
+    }
+    //
+    // function getTime() {
+    //     var fromDate = $("#ssyqfrom1").val();
+    //     var toDate = $("#ssyqfrom2").val();
+    //
+    //     var fromTime = $("#fromTime").val();
+    //     var toTime = $("#toTime").val();
+    //
+    //
+    // }
     /**
      * 雨量信息表
      */
     function addRainInfoToRainTable() {
+
         if (rainTable == null) {
             rainTable = $("#rainTable").DataTable({
                 serverSide: true,
+                autoWidth: false,
                 ajax: {
                     url: "/rain/getRainInfo",
                     type: "post",
                     data: function (d) {
-                        var fromTime = $("#ssyqfrom1").val();
-                        var toTime= $("#ssyqfrom2").val();
-                        var rainfall;
-                        d.fromTime = fromTime;
-                        d.toTime = toTime;
-                        d.rainfall = rainfall;
+                        var from = $("#ssyqfrom1").val()+$("#fromTime").val()+":00:00";
+                        var to = $("#ssyqfrom2").val()+$("#toTime").val()+":00:00";
+
+                        // var fromTime = $("#fromTime").val();
+                        // var toTime = $("#toTime").val();
+
+                        var rainfall=getRainfall();
+
+                        // d.fromTime = from;//起始时间
+                        d.fromTime = $("#ssyqfrom1").val();//起始时间
+                        // d.toTime = to;//结束时间
+
+                        d.minRain = rainfall[0];//最小雨量
+                        d.maxRain = rainfall[1];//最大雨量
+                        // d.minRain = 0;
+
                         return JSON.stringify(d);
                     },
                     // dataSrc: ""
@@ -738,8 +804,9 @@ $(function () {
                 },
                 //默认最后一列（最后更新时间）降序排列
                 // order: [[ 2, "desc" ]],
-                columnDefs: [
+                columns: [
                     {
+                        // width: "20%",
                         targets: 0,
                         data: "stationCode",
                         title: "站码",
@@ -751,7 +818,7 @@ $(function () {
                     },
                     {
                         targets: 2,
-                        data: "riverName",
+                        data: "rainfall",
                         title: "雨量",
                     },
                     {
