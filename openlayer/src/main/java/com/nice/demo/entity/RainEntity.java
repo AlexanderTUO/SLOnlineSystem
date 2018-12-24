@@ -20,7 +20,7 @@ public class RainEntity extends PagingResult{
     private String city;
     private String suboffice;
     private String address;
-    private double rainfall;
+    private Double rainfall;
     private Date rainTime;
 
 }

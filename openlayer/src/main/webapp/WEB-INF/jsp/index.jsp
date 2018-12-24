@@ -138,19 +138,19 @@
         <div class="sqHeader">
             条件选择</div>
         <div class="yqTopTime">
-            &nbsp&nbsp 从<input id="ssyqfrom1" name="from" type="text" value="2008-05-16 " />
+            &nbsp&nbsp 从<input id="ssyqfrom1" name="from" type="text" value="2008-05-15 " />
             <select id="fromTime">
-                <option value="0">0时</option>
-                <option value="6">6时</option>
-                <option value="12"selected="selected">12时</option>
+                <option value="00" selected="selected">0时</option>
+                <option value="06">6时</option>
+                <option value="12">12时</option>
                 <option value="18">18时</option>
             </select><br />
             <br />
             &nbsp&nbsp 到<input id="ssyqfrom2" name="from" type="text" value="2008-05-16 " />
             <select id="toTime">
                 <option value="00">0时</option>
-                <option value="06">6时</option>
-                <option value="12" selected="selected">12时</option>
+                <option value="06" selected="selected">6时</option>
+                <option value="12">12时</option>
                 <option value="18">18时</option>
             </select>
         </div>
@@ -161,7 +161,8 @@
         <div class="yqContent">
             <ul>
                 <li style="background: url('images/shishiyuqing/yq00.png') no-repeat;">
-                    <input class="ylxxCheckbox" type="checkbox" value="0"/>0</li>
+                    <input class="ylxxCheckbox" type="checkbox" value="0"
+                           checked="true" />0</li>
                 <li style="background: url('images/shishiyuqing/yq01.png') no-repeat;">
                     <input class="ylxxCheckbox" type="checkbox" value="10"/>10</li>
                 <li style="background: url('images/shishiyuqing/yq02.png') no-repeat;">
@@ -197,6 +198,12 @@
             <div class="yqHeader">
                 各市最大雨量</div>
             <div class="ylxxContent" id="gszdylTab">
+                <table id="maxRainTable" style="width: 250px;">
+                    <thead>
+                    <td></td>
+                    <td></td>
+                    </thead>
+                </table>
             </div>
         </div>
         <div id="ljtj">

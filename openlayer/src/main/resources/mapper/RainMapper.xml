@@ -5,7 +5,7 @@
     <sql id="condition">
         <where>
             <if test="fromTime!=null and toTime!=null">
-                rainTime between #{fromTime} and #{toTime}
+                `time` between #{fromTime} and #{toTime}
             </if>
             <if test="minRain!=null and maxRain!=null">
                 and rainfall between #{minRain} and #{maxRain}
@@ -46,5 +46,50 @@
         FROM `rain` inner join `siteinfo`
         on  `siteinfo`.`stationCode`=`rain`.`stationCode`
         <include refid="condition"></include>
+    </select>
+
+    <select id="getRainBySite" resultType="com.nice.demo.entity.RainEntity">
+        SELECT `rain`.`stationCode`,
+        `rain`.`time` rainTime,
+        `rain`.`rainfall`,
+        `siteinfo`.`stationName`,
+        `siteinfo`.`longitude`,
+        `siteinfo`.`latitude`,
+        `siteinfo`.`riverName`,
+        `siteinfo`.`category`,
+        `siteinfo`.`city`,
+        `siteinfo`.`suboffice`,
+        `siteinfo`.`address`
+        FROM `rain` inner join `siteinfo`
+        on  `siteinfo`.`stationCode`=`rain`.`stationCode`
+        and rain.stationCode=#{site}
+    </select>
+
+    <!--各市最大雨量-->
+    <select id="getMaxRainfall" resultType="java.util.HashMap">
+        SELECT `siteinfo`.`suboffice` suboffice,MAX(rainfall) max
+        FROM
+            `rain`
+        INNER JOIN `siteinfo` ON `siteinfo`.`stationCode` = `rain`.`stationCode`
+        <include refid="condition"></include>
+        GROUP BY	`siteinfo`.`suboffice`
+        <include refid="paging"></include>
+    </select>
+
+    <!--查询各市最大雨量行数-->
+    <select id="getMaxRainRows" resultType="Integer">
+        SELECT
+            COUNT(1)
+        FROM
+        (
+            SELECT
+                `siteinfo`.`suboffice`
+            FROM
+                `rain`
+            INNER JOIN `siteinfo` ON `siteinfo`.`stationCode` = `rain`.`stationCode`
+            <include refid="condition"></include>
+            GROUP BY
+                `siteinfo`.`suboffice`
+        ) office
     </select>
 </mapper>

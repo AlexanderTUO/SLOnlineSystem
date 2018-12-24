@@ -444,7 +444,7 @@ $(function () {
                         src: imgURL
                     })
                 }));
-                ssslSource.addFeature(riverFeature);
+                ssslLayer.getSource().addFeature(riverFeature);
                 if (riverArray == null) {
                     riverArray = new Array();
                 }
@@ -476,7 +476,7 @@ $(function () {
                         src: imgURL
                     })
                 }));
-                ssslSource.addFeature(reservoirFeature);
+                ssslLayer.getSource.addFeature(reservoirFeature);
 
                 if (rverArray == null) {
                     rverArray = new Array();
@@ -485,9 +485,9 @@ $(function () {
             }
 
         }
-        ssslLayer.setSource(ssslSource);
-        map.removeLayer(ssslLayer);
-        map.addLayer(ssslLayer);
+        // ssslLayer.setSource(ssslSource);
+        // map.removeLayer(ssslLayer);
+        // map.addLayer(ssslLayer);
     }
 
     /**
@@ -593,6 +593,8 @@ $(function () {
         return false;
     })
 
+
+
     /**
      * 地图点击事件
      */
@@ -607,7 +609,12 @@ $(function () {
 
         if (feature) {
             popContent.html("");
-            showWaterDetail(feature);
+            if (feature.get("type") == "river" || feature.get("type") == "reservoir") {
+                showWaterDetail(feature);
+            }else if (feature.get("type") == "rain") {
+                showRainDetail(feature);
+            }
+
             // var element = pop.getElement();
             // var coordinate = e.coordinate;
             //
@@ -690,6 +697,9 @@ $(function () {
     /*********************************实时雨情START********************************************/
 
     var rainTable = null;
+    var maxRainTable = null;
+    var ssyqLayer;
+    var ssyqArray;
 
     $("#ssyqfrom1,#ssyqfrom2").datepicker({
         // format: "yyyy-mm-dd"
@@ -704,21 +714,26 @@ $(function () {
         var rainCheck = $("#ssyq").prop('checked');;
         if (rainCheck) {
             addRainInfoToRainTable();
-            // addRainInfoToMaxRainTable();
+            addRainInfoToMaxRainTable();
             // addRainInfoToStaTable();
             $(".ssyqDiv").show();
+            $("#gszdylTab").show();
         }else {
+            clearSsyqMarkers();
             $(".ssyqDiv").hide();
         }
 
     });
 
     $("#fromTime").change(function () {
-        rainTable.ajax.reload();
+        clearSsyqMarkers();
+        addRainInfoToRainTable();
+        addRainInfoToMaxRainTable();
     });
 
     $("#toTime").change(function () {
-        rainTable.ajax.reload();
+        clearSsyqMarkers();
+        addRainInfoToRainTable();
     });
 
     $(".ylxxCheckbox ").change(function () {
@@ -757,20 +772,34 @@ $(function () {
         result.push(max);
         return result;
     }
-    //
-    // function getTime() {
-    //     var fromDate = $("#ssyqfrom1").val();
-    //     var toDate = $("#ssyqfrom2").val();
-    //
-    //     var fromTime = $("#fromTime").val();
-    //     var toTime = $("#toTime").val();
-    //
-    //
-    // }
+
     /**
      * 雨量信息表
      */
     function addRainInfoToRainTable() {
+        //起始时间
+        var from = $("#ssyqfrom1").val() +" "+ $("#fromTime").val() + ":00:00";
+        // 截止时间
+        var to = $("#ssyqfrom2").val() +" "+ $("#toTime").val() + ":00:00";
+        // 雨量
+        var rainfall = getRainfall();
+        var data = {
+            fromTime: from,
+            toTime: to,
+            min: rainfall[0],
+            max: rainfall[1]
+        };
+
+        $.ajax({
+            url: "/rain/getRainInfo",
+            type: "post",
+            data: JSON.stringify(data),
+            dataType: "json",
+            contentType: "application/json",
+            success: function (pagingResult) {
+                addSsyqMarkers(pagingResult.data);
+            }
+        });
 
         if (rainTable == null) {
             rainTable = $("#rainTable").DataTable({
@@ -788,9 +817,8 @@ $(function () {
 
                         var rainfall=getRainfall();
 
-                        // d.fromTime = from;//起始时间
-                        d.fromTime = $("#ssyqfrom1").val();//起始时间
-                        // d.toTime = to;//结束时间
+                        d.fromTime = from;//起始时间
+                        d.toTime = to;//结束时间
 
                         d.minRain = rainfall[0];//最小雨量
                         d.maxRain = rainfall[1];//最大雨量
@@ -830,13 +858,204 @@ $(function () {
 
             });
         } else {
-            rverTable.ajax.reload();
+            rainTable.ajax.reload();
+        }
+
+        /**
+         * 行点击事件
+         */
+        $('#rainTable tbody').on('click', 'tr', function () {
+
+            var data = rainTable.row(this).data();
+            var stationCode = data.stationCode;
+            $.ajax({
+                url: "/rain/getRainBySite/"+stationCode,
+                type: "get",
+                success: function (rainInfo) {
+                    if (rainInfo) {
+                        var lon = rainInfo[0].longitude;
+                        var lat = rainInfo[0].latitude;
+                        var coordinate = [parseFloat(lon), parseFloat(lat)];
+
+                        var point = new ol.geom.Point(coordinate);
+
+                        var feature = new ol.Feature({
+                            geometry: point,
+                            name: rainInfo[0].address,
+                            type: "rain",
+                            info: rainInfo[0].stationCode,
+                        })
+                        moveTo(feature);
+                        showRainDetail(feature);
+                    }
+                }
+            })
+
+
+        })
+
+    }
+
+    /**
+     * 显示雨情详情
+     * @param feature
+     */
+    function showRainDetail(feature) {
+        var stationCode = feature.get("info");
+        $.ajax({
+            url: "/rain/getRainBySiteCharts/"+stationCode,
+            type: "get",
+            success:function (data) {
+
+                if ($("#ChartRltdiv").length > 0) {
+                    $("#ChartRltdiv").remove();
+                }
+
+                var html = '<div id="ChartRltdiv" style="width:300px;height:200px;"></div></br>'
+                    + '<div style="font-size: 13px;line-height: 20px;">最新水位：' + data[0].value + '</br>时间：' + data[0].label + '</br>站址：' + feature.get("name") + '</div>';
+                popContent.html(html);
+                // FusionCharts表格
+                var chart = new FusionCharts({
+                    type: "line",
+                    renderAt: "ChartRltdiv",
+                    width: "300",
+                    height: "200"
+                }).render();
+
+                var showDataMap = {'data': data};
+                chart.setJSONData(showDataMap);
+
+                var coordinate = feature.getGeometry().getCoordinates();
+                pop.setPosition(coordinate);
+
+            }
+        })
+    }
+    /**
+     * 添加标注
+     * @param waterInfo
+     */
+    function addSsyqMarkers(rainInfo) {
+
+        if (ssyqLayer == null) {
+            ssyqLayer =  new ol.layer.Vector({
+                source: new ol.source.Vector()
+            })
+            map.addLayer(ssyqLayer);
+        }
+
+        var rainFeature;
+
+        for (var index = 0; index < rainInfo.length; index++) {
+            var lon = rainInfo[index].longitude;
+            var lat = rainInfo[index].latitude;
+            var point = new ol.geom.Point([parseFloat(lon), parseFloat(lat)]);
+
+            var imgURL = null;
+            if (rainInfo[index].rainfall > 0.0&&rainInfo[index].rainfall <= 9.9) {
+                imgURL = "images/shishiyuqing/yq00.png";
+            }else if (rainInfo[index].rainfall > 9.9&&rainInfo[index].rainfall <= 24.9) {
+                imgURL = "images/shishiyuqing/yq01.png";
+            }else if (rainInfo[index].rainfall > 24.9&&rainInfo[index].rainfall <= 49.9) {
+                imgURL = "images/shishiyuqing/yq02.png";
+            }else if (rainInfo[index].rainfall > 49.9&&rainInfo[index].rainfall <= 99.9) {
+                imgURL = "images/shishiyuqing/yq03.png";
+            }else if (rainInfo[index].rainfall > 99.9&&rainInfo[index].rainfall <= 249.9) {
+                imgURL = "images/shishiyuqing/yq04.png";
+            }else if (rainInfo[index].rainfall > 249.9&&rainInfo[index].rainfall < 259.9) {
+                imgURL = "images/shishiyuqing/yq05.png";
+            }else if (rainInfo[index].rainfall > 259.9) {
+                imgURL = "images/shishiyuqing/yq06.png";
+            }
+            rainFeature = new ol.Feature({
+                geometry: point,
+                name:rainInfo[index].address,
+                type: "rain",
+                imgURL:imgURL,
+                info: rainInfo[index].stationCode,
+                fid: "rain" + index.toString()
+            })
+            rainFeature.setStyle(new ol.style.Style({
+                image: new ol.style.Icon({
+                    src: imgURL
+                })
+            }));
+            ssyqLayer.getSource().addFeature(rainFeature);
+            if (ssyqArray == null) {
+                ssyqArray = new Array();
+            }
+            ssyqArray.push(rainFeature);
         }
     }
 
+    /**
+     * 清空标注
+     * @param type
+     */
+    function clearSsyqMarkers() {
+        for (var index = 0; index < ssyqArray.length; index++) {
+            ssyqLayer.getSource().removeFeature(ssyqArray[index]);
+        }
+        ssyqArray = null;
+    }
+
+    /**
+     * 各市最大雨量表
+     */
     function addRainInfoToMaxRainTable() {
 
+        if (maxRainTable == null) {
+            maxRainTable = $("#maxRainTable").DataTable({
+                serverSide: true,
+                autoWidth: false,
+                ajax: {
+                    url: "/rain/getMaxRainfall",
+                    type: "post",
+                    data: function (d) {
+                        var from = $("#ssyqfrom1").val()+$("#fromTime").val()+":00:00";
+                        var to = $("#ssyqfrom2").val()+$("#toTime").val()+":00:00";
+
+                        // var fromTime = $("#fromTime").val();
+                        // var toTime = $("#toTime").val();
+
+                        var rainfall=getRainfall();
+
+                        d.fromTime = from;//起始时间
+                        d.toTime = to;//结束时间
+
+                        d.minRain = rainfall[0];//最小雨量
+                        d.maxRain = rainfall[1];//最大雨量
+                        // d.minRain = 0;
+
+                        return JSON.stringify(d);
+                    },
+                    // dataSrc: ""
+                    dataType: "json",
+                    contentType: "application/json",
+                },
+                //默认最后一列（最后更新时间）降序排列
+                // order: [[ 2, "desc" ]],
+                columns: [
+                    {
+                        // width: "20%",
+                        targets: 0,
+                        data: "suboffice",
+                        title: "市名",
+                    },
+                    {
+                        targets: 1,
+                        data: "max",
+                        title: "最大雨量",
+                    }
+                ]
+
+            });
+        } else {
+            maxRainTable.ajax.reload();
+        }
+
     }
+
 
     function addRainInfoToStaTable() {
 

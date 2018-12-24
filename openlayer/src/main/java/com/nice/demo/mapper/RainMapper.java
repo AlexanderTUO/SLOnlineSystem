@@ -5,8 +5,10 @@ import com.nice.demo.bean.WaterQueryBean;
 import com.nice.demo.entity.PagingResult;
 import com.nice.demo.entity.RainEntity;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @Author: tyk
@@ -27,7 +29,7 @@ public interface RainMapper {
      * @param site
      * @return
      */
-    List<RainEntity> getRainBySite(String site);
+    List<RainEntity> getRainBySite(@Param("site") String site);
 
     /**
      * 根据条件查询雨情信息行数
@@ -35,4 +37,17 @@ public interface RainMapper {
      * @return
      */
     Integer getRainRows(RainQueryBean rain);
+
+    /**
+     * 获取各市最大雨量
+     * @return
+     */
+    List<Map> getMaxRainfall( RainQueryBean rainQueryBean);
+
+    /**
+     * 根据条件查询各市最大雨量行数
+     * @param rain 水情类型
+     * @return
+     */
+    Integer getMaxRainRows(RainQueryBean rain);
 }
