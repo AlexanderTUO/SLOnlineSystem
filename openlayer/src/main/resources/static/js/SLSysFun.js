@@ -1008,6 +1008,9 @@ $(function () {
             maxRainTable = $("#maxRainTable").DataTable({
                 serverSide: true,
                 autoWidth: false,
+                searching: false,
+                info: false,
+                lengthChange: false,
                 ajax: {
                     url: "/rain/getMaxRainfall",
                     type: "post",
@@ -1062,3 +1065,193 @@ $(function () {
     }
 
 })
+
+
+
+/******************************实时雨情END**************************************/
+/******************************台风路径START**************************************/
+
+var landfallTable = null;
+var landfallConTable = null;
+
+
+    $("#tflj").change(function () {
+        var landfall = $(this).prop("checked");
+        if (landfall) {
+            addLandfallConTable();
+            $(".tfDiv").show();
+
+        } else {
+            $(".tfDiv").hide();
+        }
+    })
+
+
+
+/**
+ * 台风条件表
+ */
+function addLandfallConTable() {
+        if (landfallConTable == null) {
+            landfallConTable = $("#landfallConTable").DataTable({
+                serverSide: true,
+                autoWidth: false,
+                searching: false,
+                info: false,
+                lengthChange: false,
+                ajax: {
+                    url: "/rain/getMaxRainfall",
+                    type: "post",
+                },
+                //默认最后一列（最后更新时间）降序排列
+                // order: [[ 2, "desc" ]],
+                columns: [
+                    // {
+                    //     // width: "20%",
+                    //     targets: 0,
+                    //     data: "suboffice",
+                    //     title: "选择",
+                    // },
+                    {
+                        targets: 1,
+                        data: "windId",
+                        title: "台风编码",
+                    },
+                    {
+                        targets: 2,
+                        data: "name",
+                        title: "台风名",
+                    },
+                    {
+                        targets: 3,
+                        data: "engName",
+                        title: "英文名",
+                    }
+                ]
+            });
+        } else {
+            landfallConTable.ajax.reload();
+        }
+    /**
+     * 行选中事件
+     */
+    $('#landfallConTable .windId').on('change', function () {
+        var windIdCheck = $(this).prop("checked");
+        if (windIdCheck) {
+            var data = landfallTable.row(this).data();
+            var windId = data.windId;
+            $.ajax({
+                url: "/landfall/getLandfallBySite/" + windId,
+                type: "get",
+                success: function (landfallInfo) {
+                    // 表格显示选中台风的详细
+                    addLandfallRouteTable(landfallInfo);
+                    // 绘制台风路径
+                    drawRoute(landfallInfo);
+                    // 利用popup显示详细信息，预测信息
+                    showLandfallDetail(landfallInfo);
+                    // if (rainInfo) {
+                    //     var lon = rainInfo[0].longitude;
+                    //     var lat = rainInfo[0].latitude;
+                    //     var coordinate = [parseFloat(lon), parseFloat(lat)];
+                    //
+                    //     var point = new ol.geom.Point(coordinate);
+                    //
+                    //     var feature = new ol.Feature({
+                    //         geometry: point,
+                    //         name: rainInfo[0].address,
+                    //         type: "rain",
+                    //         info: rainInfo[0].stationCode,
+                    //     })
+                    //     moveTo(feature);
+                    //     showRainDetail(feature);
+                    // }
+                }
+            });
+        } else {
+            // 清除表格选中台风的详细
+            clearLandfallRouteTable();
+            // 清除台风路径
+            clearRoute();
+            // 隐藏popup详细信息，预测信息
+            clearLandfallDetail();
+        }
+
+
+
+    })
+
+    }
+
+/**
+ * 台风路径表
+ */
+function addLandfallRouteTable(landfallInfo) {
+        if (landfallTable == null) {
+            landfallTable = $("#landfallTable").DataTable({
+                autoWidth: false,
+                searching: false,
+                info: false,
+                lengthChange: false,
+                data: landfallInfo,
+                // ajax: {
+                //     url: "/landfall/getMaxRainfall",
+                //     type: "post",
+                // },
+                //默认最后一列（最后更新时间）降序排列
+                // order: [[ 2, "desc" ]],
+                columns: [
+                    {
+                        // width: "20%",
+                        targets: 0,
+                        data: "windTime",
+                        title: "时间",
+                    },
+                    {
+                        targets: 1,
+                        data: "windPower",
+                        title: "风力",
+                    },
+                    {
+                        targets: 2,
+                        data: "windSpeed",
+                        title: "风速",
+                    }
+                ]
+
+            });
+        } else {
+            landfallTable.ajax.reload();
+        }
+    }
+
+/**
+ * 显示台风路径详细信息
+ */
+function showLandfallDetail(landfallInfo) {
+
+}
+/**
+ * 绘制台风路径
+ */
+function drawRoute(landfallInfo) {
+
+}
+
+/**
+ *  清除
+ */
+function clearLandfallRouteTable() {
+
+}
+
+function clearRoute() {
+
+}
+
+function clearLandfallDetail() {
+
+}
+
+
+/******************************台风路径END**************************************/

@@ -299,6 +299,14 @@
         <div class="choiceDiv">
             <div class="tfHeader">
                 条件选择
+                <table id="landfallCon">
+                    <thead>
+                        <td><input type="checkbox" class="windId"></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </thead>
+                </table>
             </div>
             <div class="tftjxzContent" id="tftjxzTab">
             </div>
@@ -306,6 +314,13 @@
         <div class="resDiv">
             <div class="tfHeader">
                 台风路径
+                <table id="landfallRoute">
+                    <thead>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    </thead>
+                </table>
             </div>
             <div class="tfljContent" id="tfljTab">
             </div>
