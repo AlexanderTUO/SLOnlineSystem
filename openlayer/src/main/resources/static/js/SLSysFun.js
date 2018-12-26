@@ -798,6 +798,7 @@ $(function () {
             contentType: "application/json",
             success: function (pagingResult) {
                 addSsyqMarkers(pagingResult.data);
+                var a = pagingResult.data;
             }
         });
 
@@ -1074,6 +1075,14 @@ $(function () {
 var landfallTable = null;
 var landfallConTable = null;
 
+var landfallInfoArray = null;
+
+var landfallTimer = null;
+
+var landfallRouteLayer = null;
+var landfallMarkerLayer = null;
+var landfallPntLayer = null;
+
 
     $("#tflj").change(function () {
         var landfall = $(this).prop("checked");
@@ -1235,7 +1244,9 @@ function showLandfallDetail(landfallInfo) {
  * 绘制台风路径
  */
 function drawRoute(landfallInfo) {
+    // 绘制路径点
 
+    // 绘制路径线
 }
 
 /**
@@ -1250,6 +1261,229 @@ function clearRoute() {
 }
 
 function clearLandfallDetail() {
+
+}
+
+function addTfljLine() {
+    var landfallDrawLineLayer = null;
+    if (landfallDrawLineLayer != null) {
+        landfallDrawLineLayer = new ol.layer.Vector({
+            source: new ol.source.Vector()
+        })
+        map.addLayer(landfallDrawLineLayer);
+    }
+    // 第一条标线
+    var dots1 = new Array();
+    dots1.push([11757464.4300438, 2154935.91508589]);
+    dots1.push([12474016.8603311, 2154935.91508589]);
+    dots1.push([12474016.8603311, 3123471.74910458]);
+
+    var line1 = new ol.geom.LineString(dots1);
+    var lineFeature1 = new ol.Feature({
+        geometry: line1
+    })
+
+    var feaStyle1 = new ol.style.Style({
+        stroke:new ol.style.Stroke({
+            color: "#990000",
+            width: 0.5
+        })
+    })
+
+    lineFeature1.setStyle(feaStyle1);
+    landfallDrawLineLayer.getSource().addFeature(lineFeature1);
+
+    // 第二条标线
+    var dots2 = new Array();
+    dots2.push([12052238.4416644, 1804722.76625729]);
+    dots2.push([13358338.895192, 1804722.76625729]);
+    dots2.push([13358338.8951928, 3096586.04422852]);
+
+    var line2 = new ol.geom.LineString(dots2);
+    var lineFeature2= new ol.Feature({
+        geometry: line2
+    })
+
+    var feaStyle2 = new ol.style.Style({
+        stroke:new ol.style.Stroke({
+            color: "#660066",
+            width: 0.5
+        })
+    })
+
+    lineFeature1.setStyle(feaStyle2);
+    landfallDrawLineLayer.getSource().addFeature(lineFeature2);
+
+    // 第三条标线
+    var dots3 = new Array();
+    dots3.push([12245143.9872601, 1689200.13960789]);
+    dots3.push([14137575.3307457, 2511525.23484571]);
+    dots3.push([14137575.3307457, 4028802.02613441]);
+
+    var line3 = new ol.geom.LineString(dots3);
+    var lineFeature3 = new ol.Feature({
+        geometry: line3
+    })
+
+    var feaStyle3 = new ol.style.Style({
+        stroke:new ol.style.Stroke({
+            color: "#6666FF",
+            width: 0.5
+        })
+    })
+
+    lineFeature1.setStyle(feaStyle3);
+    landfallDrawLineLayer.getSource().addFeature(lineFeature3);
+
+    // 第四条标线
+    var dots4 = new Array();
+    dots4.push([12245143.9872601, 1689200.13960789]);
+    dots4.push([13914936.3491592, 1689200.13960789]);
+    dots4.push([14694172.7847121, 2511525.23484571]);
+    dots4.push([14694172.7847121, 4028802.02613441]);
+
+    var line4 = new ol.geom.LineString(dots4);
+    var lineFeature4 = new ol.Feature({
+        geometry: line4
+    })
+
+    var feaStyle4 = new ol.style.Style({
+        stroke:new ol.style.Stroke({
+            color: "#009900",
+            width: 0.5
+        })
+    })
+
+    lineFeature1.setStyle(feaStyle4);
+    landfallDrawLineLayer.getSource().addFeature(lineFeature4);
+}
+
+/**
+ * 添加台风标注点到图层
+ * @param i
+ * @param landfallInfoE
+ */
+function addLandfallPath(i, landfallInfoE) {
+    var landfallCurMarker = null;
+
+    var lon = landfallInfoE.longitude;
+    var lat = landfallInfoE.latitude;
+
+    var size = map.getSize();
+    var bound = map.getView().calculateExtent(size);
+
+    if (lon < bound[0] || lon > bound[3] || lat < bound[0] || lat > bound[2]) {
+        map.getView().setCenter([lon, lat]);
+        map.getView().setZoom(7);
+    }
+
+    var coordinate = [lon, lat];
+
+    landfallCurMarker = new ol.Feature({
+        geometry: new ol.geom.Point(coordinate),
+        type: 'landfallMarker'
+    })
+
+    if (landfallCurMarker != null) {
+        landfallPntLayer.getSource().removeFeature(landfallCurMarker);
+    }
+
+    var curImage = "images/taifeng/taifeng.gif";
+
+    var curMarkerStyle = new ol.style.Style({
+        image:new ol.style.Icon({
+            anchorOrigin: 'bottom-left',
+            anchorXUnits: 'fraction',
+            anchorYUnits: 'pixels',
+            offsetOrigin:'bottom-left',
+            scale:1,
+            opacity: 1,
+            src: curImage
+        })
+    });
+
+    landfallCurMarker.setStyle(curMarkerStyle);
+    landfallPntLayer.addFeature(landfallCurMarker);
+
+    // 绘制台风路径
+    var grade = 5;
+    var imgUrl = null;
+
+    if (landfallInfoE.power!=null) {
+        grade = landfallInfoE.power;
+    }
+
+    if (grade == 4 || grade == 5 || grade == 6) {
+        imgUrl = 'images/taifeng/Wind00.png';
+    }else if (grade == 7) {
+        imgUrl = 'images/taifeng/Wind06.png';
+    }else if (grade == 8 || grade == 9) {
+        imgUrl = 'images/taifeng/Wind05.png';
+    }else if (grade == 10 || grade == 11) {
+        imgUrl = 'images/taifeng/Wind04.png';
+    }else if (grade == 12 || grade == 13) {
+        imgUrl = 'images/taifeng/Wind03.png';
+    }else if (grade == 14 || grade == 15) {
+        imgUrl = 'images/taifeng/Wind02.png';
+    }else if (grade == 16) {
+        imgUrl = 'images/taifeng/Wind01.png';
+    }
+
+    // var routeStyle = new ol.style.Style({
+    //
+    // })
+
+
+}
+
+/**
+ * 绘制台风预测路线
+ */
+function drawLandfallForcast() {
+
+}
+
+function drawLandfallRoute() {
+
+    //添加台风路径图层
+    if (landfallRouteLayer) {
+        landfallRouteLayer = new ol.layer.Vector({
+            source: new ol.source.Vector()
+        })
+        map.addLayer(landfallRouteLayer)
+    }
+    //添加台风标注图层
+    if (landfallMarkerLayer) {
+        landfallMarkerLayer = new ol.layer.Vector({
+            source: new ol.source.Vector()
+        })
+        map.addLayer(landfallMarkerLayer)
+    }
+    //添加台风点图层
+    if (landfallPntLayer) {
+        landfallPntLayer = new ol.layer.Vector({
+            source: new ol.source.Vector()
+        })
+        map.addLayer(landfallPntLayer);
+    }
+
+    // 将地图中心设置为第一个点的位置并设置缩放等级为7
+    map.getView().setCenter([landfallInfoArray[0].longitude, landfallInfoArray[0].latitude]);
+    map.getView().setZoom(7);
+
+    var i = 0;
+    // 设置定时器显示台风点标注
+    landfallTimer = setInterval(function () {
+        if (i < landfallInfoArray.length) {
+            addLandfallPath(i, landfallInfoArray[i++]);
+        } else {
+            drawLandfallForcast();
+            if (landfallTimer != null) {
+                clearInterval(landfallTimer);
+                landfallTimer = null;
+            }
+        }
+    })
 
 }
 
