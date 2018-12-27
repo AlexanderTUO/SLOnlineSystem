@@ -13,5 +13,5 @@ import java.io.Serializable;
 public class PagingParam implements Serializable {
     private Integer draw;
     private Integer start;
-    private Integer length ;
+    private Integer length;
 }

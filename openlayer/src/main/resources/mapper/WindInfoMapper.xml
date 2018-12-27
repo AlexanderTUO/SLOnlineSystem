@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.nice.demo.mapper.WindBasicMapper">
+    <!--查询台风路径信息-->
+    <select id="getWindInfos" resultType="com.nice.demo.entity.WindInfoEntity">
+        SELECT `windinfo`.`id`,
+        `windinfo`.`windId`,
+        `windinfo`.`windTime`,
+        `windinfo`.`longitude`,
+        `windinfo`.`latitude`,
+        `windinfo`.`windPower`,
+        `windinfo`.`windSpeed`,
+        `windinfo`.`airPressure`,
+        `windinfo`.`moveSpeed`,
+        `windinfo`.`moveDirect`,
+        `windinfo`.`sevRadius`,
+        `windinfo`.`tenRadius`
+        FROM `windinfo`;
+      <include refid="condition"></include>
+      <include refid="paging"></include>
+    </select>
+
+    <!--分页条件-->
+    <sql id="paging">
+        <if test="length!=null">
+            limit #{length}
+        </if>
+        <if test="start!=null">
+            offset #{start}
+        </if>
+    </sql>
+
+    <sql id="condition">
+        <where>
+            <if test="windId!=null">
+                windId = #{windId}
+            </if>
+        </where>
+    </sql>
+
+    <!--查询台风路径信息行数-->
+    <select id="getWindInfoRows" resultType="java.lang.Integer">
+      SELECT count(1)
+      FROM `windbasicinfo`
+      <include refid="condition"></include>
+    </select>
+
+
+</mapper>

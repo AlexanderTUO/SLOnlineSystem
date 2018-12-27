@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.nice.demo.mapper.WindBasicMapper">
+    <!--查询台风详细-->
+    <select id="getWindBasicInfo" resultType="com.nice.demo.entity.WindBasicEntity">
+      SELECT `wb`.`windId`,
+        `wb`.`windName`,
+        `wb`.`windEng`
+      FROM `windbasicinfo` `wb`
+      <include refid="paging"></include>
+    </select>
+
+    <!--分页条件-->
+    <sql id="paging">
+        <if test="length!=null">
+            limit #{length}
+        </if>
+        <if test="start!=null">
+            offset #{start}
+        </if>
+    </sql>
+
+    <select id="getWindBasicRows" resultType="java.lang.Integer">
+      SELECT count(1)
+      FROM `windbasicinfo`;
+    </select>
+
+
+</mapper>

@@ -299,13 +299,13 @@
         <div class="choiceDiv">
             <div class="tfHeader">
                 条件选择
-                <table id="landfallCon">
-                    <thead>
-                        <td><input type="checkbox" class="windId"></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                    </thead>
+                <table id="landfallConTable">
+                    <%--<thead>--%>
+                        <%--&lt;%&ndash;<td><input type="checkbox" class="windId"></td>&ndash;%&gt;--%>
+                        <%--&lt;%&ndash;<td></td>&ndash;%&gt;--%>
+                        <%--&lt;%&ndash;<td></td>&ndash;%&gt;--%>
+                        <%--&lt;%&ndash;<td></td>&ndash;%&gt;--%>
+                    <%--</thead>--%>
                 </table>
             </div>
             <div class="tftjxzContent" id="tftjxzTab">
