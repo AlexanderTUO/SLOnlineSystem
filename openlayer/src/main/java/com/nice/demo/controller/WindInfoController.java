@@ -1,13 +1,12 @@
 package com.nice.demo.controller;
 
-import com.nice.demo.bean.PagingParam;
 import com.nice.demo.bean.WindInfoQueryBean;
 import com.nice.demo.entity.PagingResult;
-import com.nice.demo.entity.WindBasicEntity;
 import com.nice.demo.entity.WindInfoEntity;
 import com.nice.demo.service.WindInfoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
@@ -24,7 +23,7 @@ public class WindInfoController {
 
     @RequestMapping("getWindInfos")
     @ResponseBody
-    public PagingResult<WindInfoEntity> getWindInfos(WindInfoQueryBean windInfoQueryBean) {
+    public PagingResult<WindInfoEntity> getWindInfos(@RequestBody WindInfoQueryBean windInfoQueryBean) {
         PagingResult<WindInfoEntity> pagingResult = windInfoService.getWindInfos(windInfoQueryBean);
         return pagingResult;
     }

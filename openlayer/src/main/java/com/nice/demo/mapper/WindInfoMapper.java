@@ -4,6 +4,7 @@ import com.nice.demo.bean.WindInfoQueryBean;
 import com.nice.demo.entity.PagingResult;
 import com.nice.demo.entity.WindInfoEntity;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -26,7 +27,7 @@ public interface WindInfoMapper {
      * @param id
      * @return
      */
-    WindInfoEntity getWindInfoById(Integer id);
+    WindInfoEntity getWindInfoById(@Param("id") Integer id);
 
     /**
      * 获取台风台风路径信息的行数

@@ -1109,6 +1109,7 @@ $(function () {
                     url: "/windBasic/getWindBasicInfo",
                     type: "post",
                 },
+
                 //默认最后一列（最后更新时间）降序排列
                 // order: [[ 2, "desc" ]],
                 columnDefs: [
@@ -1117,7 +1118,7 @@ $(function () {
                         targets: 0,
                         title: "选择",
                         render:function (data,type,row) {
-                            return "<input type='checkbox' class='windId'>"
+                            return "<input type='checkbox' class='windId' id='sss'>"
                         }
                     },
                     {
@@ -1140,20 +1141,25 @@ $(function () {
         } else {
             landfallConTable.ajax.reload();
         }
-        // landfallConTable.Columns.Add("a", typeof(int));
         /**
          * 行选中事件
          */
-        $('#landfallConTable .windId').on('change', function () {
+        $('#landfallConTable').delegate('.windId','change',function () {
             var windIdCheck = $(this).prop("checked");
             if (windIdCheck) {
-                var data = landfallTable.row(this).data();
+                var data = landfallConTable.row(this.parent).data();
                 var windId = data.windId;
+                // 表格显示选中台风的详细
+                // addLandfallRouteTable(windId);
                 $.ajax({
-                    url: "/landfall/getLandfallBySite/" + windId,
-                    type: "get",
+                    url: "/windInfo/getWindInfos",
+                    type: "post",
+                    data: JSON.stringify({
+                        windId: windId
+                    }),
+                    dataType: "json",
+                    contentType: "application/json",
                     success: function (landfallInfo) {
-                        // 表格显示选中台风的详细
                         addLandfallRouteTable(landfallInfo);
                         // 绘制台风路径
                         drawRoute(landfallInfo);
@@ -1186,10 +1192,7 @@ $(function () {
                 clearLandfallDetail();
             }
 
-
-
         })
-
     }
 
     /**
@@ -1198,16 +1201,27 @@ $(function () {
     function addLandfallRouteTable(landfallInfo) {
         if (landfallTable == null) {
             landfallTable = $("#landfallTable").DataTable({
+                // serverSide: true,
+                paging: true,
                 autoWidth: false,
                 searching: false,
                 info: false,
                 lengthChange: false,
-                data: landfallInfo,
+                data: landfallInfo.data,
+                dataSrc: "",
                 // ajax: {
                 //     url: "/landfall/getMaxRainfall",
                 //     type: "post",
+                //     data:function (request) {
+                //
+                //     }
                 // },
-                //默认最后一列（最后更新时间）降序排列
+                // data: JSON.stringify({
+                //     windId: windId
+                // }),
+                // dataType: "json",
+                // contentType: "application/json",
+                // 默认最后一列（最后更新时间）降序排列
                 // order: [[ 2, "desc" ]],
                 columns: [
                     {

@@ -16,11 +16,11 @@ public class WindInfoEntity {
     private Date windTime;
     private Double longitude;
     private Double latitude;
-    private Integer windPower;
-    private Integer windSpeed;
-    private Integer airPressure;
-    private Integer moveSpeed;
-    private Integer moveDirect;
+    private String windPower;
+    private String windSpeed;
+    private String airPressure;
+    private String moveSpeed;
+    private String moveDirect;
     private Integer sevRadius;
     private Integer tenRadius;
 
