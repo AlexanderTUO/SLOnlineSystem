@@ -64,5 +64,10 @@ public class MapController {
         return "fusionCharts";
     }
 
+    @RequestMapping("timer")
+    public String timer() {
+        return "timer";
+    }
+
 
 }

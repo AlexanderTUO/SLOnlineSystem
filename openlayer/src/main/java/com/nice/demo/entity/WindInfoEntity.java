@@ -2,7 +2,7 @@ package com.nice.demo.entity;
 
 import lombok.Data;
 
-import java.util.Date;
+import java.sql.Timestamp;
 
 /**
  * @Author: tyk
@@ -13,7 +13,7 @@ import java.util.Date;
 public class WindInfoEntity {
     private Integer id;
     private String windId;
-    private Date windTime;
+    private Timestamp windTime;
     private Double longitude;
     private Double latitude;
     private String windPower;
@@ -23,5 +23,4 @@ public class WindInfoEntity {
     private String moveDirect;
     private Integer sevRadius;
     private Integer tenRadius;
-
 }

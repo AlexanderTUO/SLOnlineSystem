@@ -1073,6 +1073,7 @@ $(function () {
 
     var landfallInfoArray = null;
     var landfallPntArray = null;
+    var landfallRouteArray = null;
 
     var landfallTimer = null;
 
@@ -1160,11 +1161,11 @@ $(function () {
                     dataType: "json",
                     contentType: "application/json",
                     success: function (landfallInfo) {
+                        // 表格显示选中台风的详细
                         addLandfallRouteTable(landfallInfo);
                         // 绘制台风路径
-                        drawRoute(landfallInfo);
-                        // 利用popup显示详细信息，预测信息
-                        showLandfallDetail(landfallInfo);
+                        drawLandfallRoute(landfallInfo);
+
                         // if (rainInfo) {
                         //     var lon = rainInfo[0].longitude;
                         //     var lat = rainInfo[0].latitude;
@@ -1208,27 +1209,20 @@ $(function () {
                 info: false,
                 lengthChange: false,
                 data: landfallInfo.data,
-                dataSrc: "",
-                // ajax: {
-                //     url: "/landfall/getMaxRainfall",
-                //     type: "post",
-                //     data:function (request) {
-                //
-                //     }
-                // },
-                // data: JSON.stringify({
-                //     windId: windId
-                // }),
-                // dataType: "json",
-                // contentType: "application/json",
-                // 默认最后一列（最后更新时间）降序排列
-                // order: [[ 2, "desc" ]],
                 columns: [
                     {
                         // width: "20%",
                         targets: 0,
                         data: "windTime",
                         title: "时间",
+                        render:function (windTime) {
+                            if (windTime == null || windTime == undefined) {
+                                return "";
+                            } else {
+                                var pattern = "yyyy-MM-dd HH:mm:ss";
+                                return dateFormat(windTime, pattern);
+                            }
+                        }
                     },
                     {
                         targets: 1,
@@ -1239,13 +1233,67 @@ $(function () {
                         targets: 2,
                         data: "windSpeed",
                         title: "风速",
+                    },
+                    {
+                        targets: 3,
+                        data: "id",
+                        title: "id",
+                        visible: false
                     }
                 ]
-
             });
         } else {
             landfallTable.ajax.reload();
         }
+
+        /**
+         * 行点击事件
+         */
+        $('#landfallTable tbody').on('click', 'tr', function () {
+            var data = landfallTable.row(this).data();
+            var id = data.id;
+            $.ajax({
+                url: "/windInfo/getWindInfoById/"+id,
+                type: "get",
+                success: function (windInfo) {
+                    // 利用popup显示详细信息，预测信息
+                    showLandfallDetail(windInfo);
+                }
+            })
+        })
+    }
+
+    /**
+     * 时间格式转换
+     * @param time
+     * @param format
+     * @returns {*}
+     */
+    var dateFormat = function(time, format){
+        var t = new Date(time);
+        var tf = function(i){return (i < 10 ? '0' : '') + i};
+        return format.replace(/yyyy|MM|dd|HH|mm|ss/g, function(a){
+            switch(a){
+                case 'yyyy':
+                    return tf(t.getFullYear());
+                    break;
+                case 'MM':
+                    return tf(t.getMonth() + 1);
+                    break;
+                case 'mm':
+                    return tf(t.getMinutes());
+                    break;
+                case 'dd':
+                    return tf(t.getDate());
+                    break;
+                case 'HH':
+                    return tf(t.getHours());
+                    break;
+                case 'ss':
+                    return tf(t.getSeconds());
+                    break;
+            }
+        })
     }
 
     /**
@@ -1278,6 +1326,9 @@ $(function () {
 
     }
 
+    /**
+     * 添加台风标线
+     */
     function addTfljLine() {
         var landfallDrawLineLayer = null;
         if (landfallDrawLineLayer != null) {
@@ -1393,14 +1444,14 @@ $(function () {
 
         var coordinate = [lon, lat];
 
+        if (landfallCurMarker != null) {
+            landfallPntLayer.getSource().removeFeature(landfallCurMarker);
+        }
+
         landfallCurMarker = new ol.Feature({
             geometry: new ol.geom.Point(coordinate),
             type: 'landfallMarker'
         })
-
-        if (landfallCurMarker != null) {
-            landfallPntLayer.getSource().removeFeature(landfallCurMarker);
-        }
 
         var curImage = "images/taifeng/taifeng.gif";
 
@@ -1417,14 +1468,14 @@ $(function () {
         });
 
         landfallCurMarker.setStyle(curMarkerStyle);
-        landfallPntLayer.addFeature(landfallCurMarker);
+        // landfallPntLayer.getSource().addFeature(landfallCurMarker);
 
         // 绘制台风路径
         var grade = 5;
         var imgUrl = null;
 
-        if (landfallInfoE.power!=null) {
-            grade = landfallInfoE.power;
+        if (landfallInfoE.windPower!=null) {
+            grade = landfallInfoE.windPower;
         }
 
         if (grade == 4 || grade == 5 || grade == 6) {
@@ -1454,30 +1505,30 @@ $(function () {
             fid: "landfallPnt" + i.toString()
         });
 
-        landfallPntLayer.getSource().addLayer(landfallPntFea);
+        landfallPntLayer.getSource().addFeature(landfallPntFea);
 
-        if (landfallPntArray != null) {
+        if (landfallPntArray == null) {
             landfallPntArray = new Array();
         }
         landfallPntArray.push(landfallPntFea);
 
         var dot = [lon, lat];
-        if (landfallInfoArray != null) {
-            landfallInfoArray = new Array();
+        if (landfallRouteArray == null) {
+            landfallRouteArray = new Array();
         }
-        landfallInfoArray.push(dot);
+        landfallRouteArray.push(coordinate);
 
         if (i > 0) {
             var landfallPathFea = new ol.Feature({
-                geometry: new ol.geom.LineString(landfallInfoArray)
+                geometry: new ol.geom.LineString(landfallRouteArray)
             });
-            landfallPntFea.setStyle(new ol.style.Style({
+            landfallPathFea.setStyle(new ol.style.Style({
                 stroke:new ol.style.Stroke({
                     color: '#EE0000',
                     width: 2
                 })
             }))
-            landfallRouteLayer.addLayer(landfallPathFea);
+            landfallRouteLayer.getSource().addFeature(landfallPathFea);
         }
     }
 
@@ -1488,24 +1539,27 @@ $(function () {
 
     }
 
-    function drawLandfallRoute() {
-
+    /**
+     * 绘制台风路径信息（点、线）
+     */
+    function drawLandfallRoute(landfallInfo) {
+        landfallInfoArray = landfallInfo.data;
         //添加台风路径图层
-        if (landfallRouteLayer) {
+        if (landfallRouteLayer==null) {
             landfallRouteLayer = new ol.layer.Vector({
                 source: new ol.source.Vector()
             })
             map.addLayer(landfallRouteLayer)
         }
         //添加台风标注图层
-        if (landfallMarkerLayer) {
+        if (landfallMarkerLayer==null) {
             landfallMarkerLayer = new ol.layer.Vector({
                 source: new ol.source.Vector()
             })
             map.addLayer(landfallMarkerLayer)
         }
         //添加台风点图层
-        if (landfallPntLayer) {
+        if (landfallPntLayer==null) {
             landfallPntLayer = new ol.layer.Vector({
                 source: new ol.source.Vector()
             })
@@ -1518,7 +1572,19 @@ $(function () {
 
         var i = 0;
         // 设置定时器显示台风点标注
-        landfallTimer = setInterval(function () {
+        // landfallTimer = setInterval(function () {
+        //     if (i < landfallInfoArray.length) {
+        //         addLandfallPath(i, landfallInfoArray[i++]);
+        //     } else {
+        //         drawLandfallForcast();
+        //         if (landfallTimer != null) {
+        //             clearInterval(landfallTimer);
+        //             landfallTimer = null;
+        //         }
+        //     }
+        // },100)
+
+        landfallTimer= setInterval(function () {
             if (i < landfallInfoArray.length) {
                 addLandfallPath(i, landfallInfoArray[i++]);
             } else {
@@ -1528,7 +1594,7 @@ $(function () {
                     landfallTimer = null;
                 }
             }
-        })
+        },300);
 
     }
 

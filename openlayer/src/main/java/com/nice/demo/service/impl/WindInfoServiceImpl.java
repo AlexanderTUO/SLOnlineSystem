@@ -34,6 +34,7 @@ public class WindInfoServiceImpl implements WindInfoService {
 
     @Override
     public WindInfoEntity getWindInfoById(Integer id) {
-        return null;
+        WindInfoEntity windInfoEntity = windInfoMapper.getWindInfoById(id);
+        return windInfoEntity;
     }
 }

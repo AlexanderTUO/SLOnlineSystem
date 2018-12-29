@@ -314,12 +314,7 @@
         <div class="resDiv">
             <div class="tfHeader">
                 台风路径
-                <table id="landfallRoute">
-                    <thead>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    </thead>
+                <table id="landfallTable">
                 </table>
             </div>
             <div class="tfljContent" id="tfljTab">

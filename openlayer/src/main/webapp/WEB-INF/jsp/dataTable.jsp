@@ -39,44 +39,54 @@
            "<'row'<'col-md-5 sm-center'i><'col-md-7 text-right sm-center'p>>"
        });
 
+
        //DataTables初始化
        var issueTable = $("#issueTable").DataTable({
-           serverSide: true,
-           ajax: {
-               url: "/water/getWaterInfo",
-               type: "post",
-               data:function(d){
-                   var type = "rr";
-                   d.type = type;
-                   return JSON.stringify(d);
-               },
-               // dataSrc: ""
-               dataType: "json",
-               contentType: "application/json",
-           },
+           // serverSide: true,
+           // ajax: {
+           //     url: "/water/getWaterInfo",
+           //     type: "post",
+           //     data:function(d){
+           //         var type = "rr";
+           //         d.type = type;
+           //         return JSON.stringify(d);
+           //     },
+           //     // dataSrc: ""
+           //     dataType: "json",
+           //     contentType: "application/json",
+           // },
+           data: [
+               ['201813','多岁的','阿萨德','阿萨德']
+           ],
            //默认最后一列（最后更新时间）降序排列
            // order: [[ 2, "desc" ]],
-           columnDefs: [
-               {
-                   targets: 0,
-                   data: "stationCode",
-                   title: "站码",
-               },
-               {
-                   targets: 1,
-                   data: "stationName",
-                   title: "站名",
-               },
-               {
-                   targets: 2,
-                   data: "riverName",
-                   title: "河流名",
-               },
-               {
-                   targets: 3,
-                   data: "category",
-                   title: "分类",
-               },
+           // columnDefs: [
+           //     {
+           //         targets: 0,
+           //         data: "stationCode",
+           //         title: "站码",
+           //     },
+           //     {
+           //         targets: 1,
+           //         data: "stationName",
+           //         title: "站名",
+           //     },
+           //     {
+           //         targets: 2,
+           //         data: "riverName",
+           //         title: "河流名",
+           //     },
+           //     {
+           //         targets: 3,
+           //         data: "category",
+           //         title: "分类",
+           //     },
+           // ],
+           "columns": [
+               {"title": "Engine"},
+               {"title": "Browser"},
+               {"title": "Platform"},
+               {"title": "Version", "class": "center"},
            ],
            initComplete: function () {
                $("#toolbar").append("<a href='https://github.com/ssy341/datatables-cn/issues/new' " +
