@@ -46,7 +46,7 @@
     </select>
 
     <!--根据id查询台风路径点详情-->
-    <select id="getWindInfoById" resultType="java.lang.Integer">
+    <select id="getWindInfoById" resultType="com.nice.demo.entity.WindInfoEntity">
         SELECT `windinfo`.`id`,
         `windinfo`.`windId`,
         `windinfo`.`windTime`,

@@ -69,5 +69,10 @@ public class MapController {
         return "timer";
     }
 
+    @RequestMapping("table")
+    public String table() {
+        return "table";
+    }
+
 
 }

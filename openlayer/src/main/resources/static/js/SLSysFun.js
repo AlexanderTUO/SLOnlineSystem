@@ -31,7 +31,7 @@ $(function () {
     //视图
     var view = new ol.View({
         center: [12308196.042592192, 2719935.2144997073],
-        // projection: projection,
+        projection: projection,
         zoom:6,
     })
 
@@ -613,6 +613,8 @@ $(function () {
                 showWaterDetail(feature);
             }else if (feature.get("type") == "rain") {
                 showRainDetail(feature);
+            }else if (feature.get("type")=='landfall') {
+                showLandfallDetail(feature);
             }
 
             // var element = pop.getElement();
@@ -1256,6 +1258,21 @@ $(function () {
                 url: "/windInfo/getWindInfoById/"+id,
                 type: "get",
                 success: function (windInfo) {
+                    if (windInfo) {
+                        var lon = windInfo.longitude;
+                        var lat = windInfo.latitude;
+                        var coordinate = [parseFloat(lon), parseFloat(lat)];
+
+                        var point = new ol.geom.Point(coordinate);
+
+                        var feature = new ol.Feature({
+                            geometry: point,
+                            type: "landfall",
+                            info: windInfo.windId,
+                        })
+                        moveTo(feature);
+                        showRainDetail(feature);
+                    }
                     // 利用popup显示详细信息，预测信息
                     showLandfallDetail(windInfo);
                 }
@@ -1299,7 +1316,34 @@ $(function () {
     /**
      * 显示台风路径详细信息
      */
-    function showLandfallDetail(landfallInfo) {
+    function showLandfallDetail(feature) {
+        var id = feature.get("info").id;
+        $.ajax({
+            url: "/windInfo/getWindInfoById/"+id,
+            type: "get",
+            success:function (windInfo) {
+
+                if ($("#windDetailDiv").length > 0) {
+                    $("#windDetailDiv").remove();
+                }
+                // 填充pop内容
+                // var html = '<div id="ChartRltdiv" style="width:300px;height:200px;"></div></br>'
+                //     + '<div style="font-size: 13px;line-height: 20px;">最新水位：' + data[0].value + '</br>时间：' + data[0].label + '</br>站址：' + feature.get("name") + '</div>';
+                var html = "<div id='windDetailDiv'style='width:232px;height:264px;'><table border='0' cellpadding='0' cellspacing='0'><tr><th border='0' >详细信息</th></tr>" +
+                    "<tr><td>过去时间：</td><td>"+windInfo.windTime+"</td></tr>" +
+                    "<tr><td>经度：</td><td>"+windInfo.longitude+"</td></tr>" +
+                    "<tr><td>纬度：</td><td>"+windInfo.latitude+"</td></tr>" +
+                    "<tr><td>最大风力：</td><td>"+windInfo.windPower+"</td></tr>" +
+                    "<tr><td>最大风速：</td><td>"+windInfo.windSpeed+"</td></tr>" +
+                    "<tr><td>中心气压：</td><td>"+windInfo.airPressure+"</td></tr>" +
+                    "<tr><td>移动速度：</td><td>"+windInfo.moveSpeed+"</td></tr>" +
+                    "<tr><td>移动风向：</td><td>"+windInfo.moveDirect+"</td></tr>" +
+                    "</table></div>"
+                popContent.html(html);
+                var coordinate = feature.getGeometry().getCoordinates();
+                pop.setPosition(coordinate);
+            }
+        })
 
     }
     /**
@@ -1431,8 +1475,8 @@ $(function () {
     function addLandfallPath(i, landfallInfoE) {
         var landfallCurMarker = null;
 
-        var lon = landfallInfoE.longitude;
-        var lat = landfallInfoE.latitude;
+        var lon = parseFloat(landfallInfoE.longitude.toString());
+        var lat = parseFloat(landfallInfoE.latitude.toString());
 
         var size = map.getSize();
         var bound = map.getView().calculateExtent(size);
@@ -1500,9 +1544,9 @@ $(function () {
         var landfallPntFea = new ol.Feature({
             geometry: new ol.geom.Point(coordinate),
             info: landfallInfoE,
-            type: "landfallPnt",
+            type: "landfall",
             imgUrl: imgUrl,
-            fid: "landfallPnt" + i.toString()
+            fid: "landfall" + i.toString()
         });
 
         landfallPntLayer.getSource().addFeature(landfallPntFea);
@@ -1571,18 +1615,6 @@ $(function () {
         map.getView().setZoom(7);
 
         var i = 0;
-        // 设置定时器显示台风点标注
-        // landfallTimer = setInterval(function () {
-        //     if (i < landfallInfoArray.length) {
-        //         addLandfallPath(i, landfallInfoArray[i++]);
-        //     } else {
-        //         drawLandfallForcast();
-        //         if (landfallTimer != null) {
-        //             clearInterval(landfallTimer);
-        //             landfallTimer = null;
-        //         }
-        //     }
-        // },100)
 
         landfallTimer= setInterval(function () {
             if (i < landfallInfoArray.length) {
