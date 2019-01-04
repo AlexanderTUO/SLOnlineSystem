@@ -47,7 +47,7 @@
 <div class="backgroundDiv">
 </div>
 <!-- 地图底图切换列表 -->
-<input type="checkbox" id="annotation">
+<%--<input type="checkbox" id="annotation">--%>
 <select class="layerSwitcherDiv" id="layerSwitcherBtn">
     <option value="road" selected="selected">谷歌交通图</option>
     <option value="terrain">谷歌地形图</option>

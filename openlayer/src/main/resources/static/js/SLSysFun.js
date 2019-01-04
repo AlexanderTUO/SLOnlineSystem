@@ -31,7 +31,7 @@ $(function () {
     //视图
     var view = new ol.View({
         center: [12308196.042592192, 2719935.2144997073],
-        projection: projection,
+        // projection: projection,
         zoom:6,
     })
 
@@ -145,6 +145,7 @@ $(function () {
         var geo = feature.getGeometry();
         var coordinate = geo.getCoordinates();
         // map.getView().setCenter(coordinate);
+        console.info(coordinate);
         map.getView().animate({
             center: coordinate,
             duration: 1000,
@@ -1268,13 +1269,13 @@ $(function () {
                         var feature = new ol.Feature({
                             geometry: point,
                             type: "landfall",
-                            info: windInfo.windId,
+                            info: windInfo,
                         })
                         moveTo(feature);
-                        showRainDetail(feature);
+                        // 利用popup显示详细信息，预测信息
+                        showLandfallDetail(feature);
                     }
-                    // 利用popup显示详细信息，预测信息
-                    showLandfallDetail(windInfo);
+
                 }
             })
         })
@@ -1316,8 +1317,8 @@ $(function () {
     /**
      * 显示台风路径详细信息
      */
-    function showLandfallDetail(feature) {
-        var id = feature.get("info").id;
+    function showLandfallDetail(landfallFea) {
+        var id = landfallFea.get("info").id;
         $.ajax({
             url: "/windInfo/getWindInfoById/"+id,
             type: "get",
@@ -1340,19 +1341,11 @@ $(function () {
                     "<tr><td>移动风向：</td><td>"+windInfo.moveDirect+"</td></tr>" +
                     "</table></div>"
                 popContent.html(html);
-                var coordinate = feature.getGeometry().getCoordinates();
+                var coordinate = landfallFea.getGeometry().getCoordinates();
                 pop.setPosition(coordinate);
             }
         })
 
-    }
-    /**
-     * 绘制台风路径
-     */
-    function drawRoute(landfallInfo) {
-        // 绘制路径点
-
-        // 绘制路径线
     }
 
     /**
@@ -1548,7 +1541,7 @@ $(function () {
             imgUrl: imgUrl,
             fid: "landfall" + i.toString()
         });
-
+        console.info(coordinate);
         landfallPntLayer.getSource().addFeature(landfallPntFea);
 
         if (landfallPntArray == null) {
@@ -1626,14 +1619,13 @@ $(function () {
                     landfallTimer = null;
                 }
             }
-        },300);
+        },100);
 
     }
 
-
     /******************************台风路径END**************************************/
 
-})
 
+})
 
 

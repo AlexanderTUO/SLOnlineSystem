@@ -74,5 +74,10 @@ public class MapController {
         return "table";
     }
 
+    @RequestMapping("pattern")
+    public String pattern() {
+        return "pattern";
+    }
+
 
 }

@@ -21,6 +21,8 @@ body {
 #map, .olMap {
     height: 100%;
     width: 100%;
+    /*width: 1800px;*/
+    /*height: 900px;*/
     overflow: hidden;
     position: absolute;
 }
@@ -32,8 +34,8 @@ body {
     position: absolute;
     background-repeat: no-repeat;
     background-position: center center;
-    left: 50%;
-    top: 50%;
+    left: calc(50% - 8px);
+    top: calc(50% - 7px);
     z-index: 1;
 }
 
